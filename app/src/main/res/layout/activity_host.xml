@@ -9,26 +9,32 @@
         tools:context=".HostActivity">
 
     <TextView
-            android:id="@+id/message"
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:text="@string/title_home"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-    <android.support.design.widget.BottomNavigationView
-            android:id="@+id/navigation"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="0dp"
-            android:layout_marginStart="0dp"
-            android:background="?android:attr/windowBackground"
+            android:text="Hello World!"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:menu="@menu/navigation"/>
+            app:layout_constraintVertical_bias="0.0" android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@+id/button"/>
+    <Button
+            android:onClick="host"
+            android:text="Host"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button" app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="148dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="147dp"
+            app:layout_constraintHorizontal_bias="0.5" android:layout_marginTop="7dp"
+            app:layout_constraintTop_toBottomOf="@+id/editText"/>
+    <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="47dp"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/editText" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.5"
+            android:layout_marginTop="177dp"
+            app:layout_constraintTop_toTopOf="parent" android:hint="quiz-id"/>
 
 </android.support.constraint.ConstraintLayout>
