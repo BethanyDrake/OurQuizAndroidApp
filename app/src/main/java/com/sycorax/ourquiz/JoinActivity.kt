@@ -3,6 +3,7 @@ package com.sycorax.ourquiz
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -25,8 +26,14 @@ class JoinActivity : AppCompatActivity() {
         textView.setText("Connecting...")
         val quizIdInputView: EditText = findViewById(R.id.editText)
 
+        val nameInputView: EditText = findViewById(R.id.nameField)
+
         val queue = Volley.newRequestQueue(this)
-        val url = "http://10.0.2.2:8090/join?quizId="+ quizIdInputView.text
+        val url = "http://10.0.2.2:8090/join?quizId=" +
+            quizIdInputView.text + "&" +
+            "name="+nameInputView.text
+
+        Log.wtf("bbbb", url)
 
         val stringRequest = StringRequest(
             Request.Method.GET, url,

@@ -1,5 +1,6 @@
 package com.sycorax.ourquiz
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
@@ -25,12 +26,15 @@ class HostActivity : AppCompatActivity() {
         val quizIdInputView: EditText = findViewById(R.id.editText)
 
         val queue = Volley.newRequestQueue(this)
-        val url = "http://10.0.2.2:8090/create?quizId="+ quizIdInputView.text
+        val quizId = quizIdInputView.text
+        val url = "http://10.0.2.2:8090/create?quizId="+ quizId
 
         val stringRequest = StringRequest(
             Request.Method.GET, url,
             Response.Listener<String> { response ->
-                textView.text = response
+                val intent = Intent(this, WaitingForPlayersActivity::class.java)
+                intent.putExtra("QUIZ_ID", quizId);
+                startActivity(intent)
             },
             Response.ErrorListener { textView.text = "That didn't work!" })
 

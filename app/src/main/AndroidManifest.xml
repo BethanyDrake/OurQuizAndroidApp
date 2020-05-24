@@ -35,6 +35,8 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.sycorax.ourquiz.MainActivity"/>
         </activity>
+        <activity android:name=".WaitingForPlayersActivity">
+        </activity>
     </application>
 
 </manifest>
