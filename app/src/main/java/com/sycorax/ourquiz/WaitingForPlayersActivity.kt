@@ -13,7 +13,6 @@ class WaitingForPlayersActivity : AppCompatActivity() {
 
 
     private fun parseList(stringList: String): List<String> {
-        Log.wtf("ffff", "parsing list: "+ stringList)
         if (stringList == "null" || stringList.length <= 2) {
             return listOf<String>();
         }
@@ -21,7 +20,6 @@ class WaitingForPlayersActivity : AppCompatActivity() {
     }
 
     private fun formatList(nameList: List<String>): String{
-        Log.wtf("ffff", nameList.lastIndex.toString())
         var formattedList = "";
         nameList.forEach { formattedList += it + "\n"}
 
@@ -37,7 +35,6 @@ class WaitingForPlayersActivity : AppCompatActivity() {
 
         val quizId = intent.extras.get("QUIZ_ID")
         val url = "http://10.0.2.2:8090/listParticipants?quizId=" +quizId
-        Log.wtf("aaaa", url)
         val participantsTextView = findViewById<TextView>(R.id.participantsView)
 
         val stringRequest = StringRequest(

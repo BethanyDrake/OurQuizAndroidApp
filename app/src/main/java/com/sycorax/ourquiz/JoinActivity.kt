@@ -1,5 +1,6 @@
 package com.sycorax.ourquiz
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
@@ -29,16 +30,20 @@ class JoinActivity : AppCompatActivity() {
         val nameInputView: EditText = findViewById(R.id.nameField)
 
         val queue = Volley.newRequestQueue(this)
-        val url = "http://10.0.2.2:8090/join?quizId=" +
-            quizIdInputView.text + "&" +
-            "name="+nameInputView.text
-
-        Log.wtf("bbbb", url)
+        val quizId = quizIdInputView.text
+        val url = "http://10.0.2.2:8090/join?" +
+                "quizId=" + quizId + "&" +
+                "name="+nameInputView.text
 
         val stringRequest = StringRequest(
             Request.Method.GET, url,
             Response.Listener<String> { response ->
                 textView.text = response
+                if (response.equals("ok", true)) {
+                    val intent = Intent(this, SubmitQuestionActivity::class.java)
+                    intent.putExtra("QUIZ_ID", quizId);
+                    startActivity(intent)
+                }
             },
             Response.ErrorListener { textView.text = "That didn't work!" })
 
