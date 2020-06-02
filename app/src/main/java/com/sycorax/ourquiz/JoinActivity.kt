@@ -28,12 +28,13 @@ class JoinActivity : AppCompatActivity() {
         val quizIdInputView: EditText = findViewById(R.id.editText)
 
         val nameInputView: EditText = findViewById(R.id.nameField)
+        val name = nameInputView.text
 
         val queue = Volley.newRequestQueue(this)
         val quizId = quizIdInputView.text
         val url = "http://10.0.2.2:8090/join?" +
                 "quizId=" + quizId + "&" +
-                "name="+nameInputView.text
+                "name="+name
 
         val stringRequest = StringRequest(
             Request.Method.GET, url,
@@ -42,6 +43,7 @@ class JoinActivity : AppCompatActivity() {
                 if (response.equals("ok", true)) {
                     val intent = Intent(this, SubmitQuestionActivity::class.java)
                     intent.putExtra("QUIZ_ID", quizId);
+                    intent.putExtra("PLAYER_NAME", name);
                     startActivity(intent)
                 }
             },

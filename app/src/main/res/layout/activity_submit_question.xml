@@ -17,7 +17,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:ems="10"
-                android:id="@+id/editText2"
+                android:id="@+id/questionText"
                 app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="100dp"
                 app:layout_constraintTop_toTopOf="parent" android:hint="What is... ?"/>
@@ -25,7 +25,7 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/editText2"
+                app:layout_constraintTop_toBottomOf="@+id/questionText"
         >
             <RadioGroup
                     android:id="@+id/radioGroup"
@@ -35,19 +35,19 @@
                     android:orientation="vertical">
                 <RadioButton
                         android:layout_width="match_parent"
-                        android:layout_height="50dp" android:id="@+id/radioButton"
+                        android:layout_height="50dp" android:id="@+id/A"
                 />
                 <RadioButton
                         android:layout_width="match_parent"
-                        android:layout_height="50dp" android:id="@+id/radioButton2"
+                        android:layout_height="50dp" android:id="@+id/B"
                 />
                 <RadioButton
                         android:layout_width="match_parent"
-                        android:layout_height="50dp" android:id="@+id/radioButton3"
+                        android:layout_height="50dp" android:id="@+id/C"
                 />
                 <RadioButton
                         android:layout_width="match_parent"
-                        android:layout_height="50dp" android:id="@+id/radioButton4"
+                        android:layout_height="50dp" android:id="@+id/D"
                 />
             </RadioGroup>
             <LinearLayout
@@ -60,29 +60,30 @@
                         android:layout_height="50dp"
                         android:inputType="textPersonName"
                         android:ems="10"
-                        android:id="@+id/editText3"/>
+                        android:id="@+id/TextA"/>
                 <EditText
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:inputType="textPersonName"
                         android:ems="10"
-                        android:id="@+id/editText4"/>
+                        android:id="@+id/TextB"/>
                 <EditText
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:inputType="textPersonName"
                         android:ems="10"
-                        android:id="@+id/editText5"/>
+                        android:id="@+id/TextC"/>
                 <EditText
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:inputType="textPersonName"
                         android:ems="10"
-                        android:id="@+id/editText6"/>
+                        android:id="@+id/TextD"/>
             </LinearLayout>
         </LinearLayout>
         <Button
-                android:text="Button"
+                android:text="Submit"
+                android:onClick="submit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/button2"/>
     </LinearLayout>
