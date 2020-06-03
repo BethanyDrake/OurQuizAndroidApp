@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentManager
 import android.util.Log
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.android.volley.Request
@@ -13,10 +14,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 
-class WaitingForPlayersActivity : FragmentActivity(), WaitingForPlayersHostSection.OnFragmentInteractionListener {
-    override fun onFragmentInteraction(uri: Uri) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+class WaitingForPlayersActivity : AppCompatActivity() {
 
 
     private fun parseList(stringList: String): List<String> {
@@ -46,10 +44,15 @@ class WaitingForPlayersActivity : FragmentActivity(), WaitingForPlayersHostSecti
         }
     }
 
+    fun startQuiz(view: View) {
+        Log.wtf("aaa", "starting quiz")
+    }
+
+
 
     private fun addHostFragment(){
         supportFragmentManager.beginTransaction()
-            .add(R.id.hostSectionFragmentContainer, WaitingForPlayersHostSection.newInstance("",""))
+            .add(R.id.hostSectionFragmentContainer, WaitingForPlayersHostSection.newInstance())
             .commit()
 
     }
