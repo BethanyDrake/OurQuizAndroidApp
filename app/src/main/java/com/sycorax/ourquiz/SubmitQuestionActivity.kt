@@ -54,7 +54,7 @@ class SubmitQuestionActivity : AppCompatActivity() {
                 jsonObject.put("questionText", questionText)
                 jsonObject.put("possibleAnswers", JSONArray(answerTexts))
                 jsonObject.put("quizId", quizId)
-                jsonObject.put("name", playerName)
+                jsonObject.put("playerName", playerName)
 
                 return jsonObject.toString().toByteArray(Charsets.UTF_8)
             }
