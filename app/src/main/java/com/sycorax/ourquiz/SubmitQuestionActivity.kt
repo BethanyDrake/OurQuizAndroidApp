@@ -42,6 +42,12 @@ class SubmitQuestionActivity : AppCompatActivity() {
         val putRequest = object : StringRequest(Request.Method.PUT, url,
             Response.Listener { response ->
                 // response
+                if (response == "OK") {
+                    val intent = Intent(this, WaitingForPlayersActivity::class.java)
+                    intent.putExtra("QUIZ_ID", quizId);
+                    intent.putExtra("PLAYER_NAME", playerName);
+                    startActivity(intent)
+                }
                 Log.d("Response", response)
             },
             Response.ErrorListener {
