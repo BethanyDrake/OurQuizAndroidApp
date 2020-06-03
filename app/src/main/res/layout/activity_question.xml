@@ -7,4 +7,50 @@
         android:layout_height="match_parent"
         tools:context=".QuestionActivity">
 
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/questionText"
+                app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="100dp"/>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/questionText"
+        >
+            <RadioGroup
+                    android:id="@+id/radioGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp" android:id="@+id/A"
+                />
+                <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp" android:id="@+id/B"
+                />
+                <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp" android:id="@+id/C"
+                />
+                <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp" android:id="@+id/D"
+                />
+            </RadioGroup>
+
+        </LinearLayout>
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>

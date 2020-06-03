@@ -131,7 +131,7 @@ class WaitingForPlayersActivity : AppCompatActivity() {
                 if (response == "true") {
                     queue.removeRequestFinishedListener(requestFinishedListener)
                     val intent = Intent(this, QuestionActivity::class.java)
-//                intent.putExtra("QUIZ_ID", intent.extras.get("QUIZ_ID") as String)
+                    intent.putExtra("QUIZ_ID", quizId.toString())
 //                intent.putExtra("PLAYER_NAME", intent.extras.get("PLAYER_NAME") as String)
 //                intent.putExtra("HOST", intent.extras.get("HOST") as Boolean)
                     startActivity(intent)

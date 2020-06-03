@@ -21,8 +21,6 @@ class SubmitQuestionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_submit_question)
     }
 
-
-
     fun submit(view: View) {
         val radioGroup: RadioGroup = findViewById(R.id.radioGroup)
         val correctAnswerButtonId = radioGroup.checkedRadioButtonId
