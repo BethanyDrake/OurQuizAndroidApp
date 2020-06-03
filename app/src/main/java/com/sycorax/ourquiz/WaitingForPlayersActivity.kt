@@ -1,8 +1,10 @@
 package com.sycorax.ourquiz
 
+import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentManager
 import android.util.Log
@@ -10,6 +12,8 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.RequestQueue.RequestFinishedListener
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -45,7 +49,16 @@ class WaitingForPlayersActivity : AppCompatActivity() {
     }
 
     fun startQuiz(view: View) {
-        Log.wtf("aaa", "starting quiz")
+        val queue = Volley.newRequestQueue(this)
+        val stringRequest = StringRequest(
+            Request.Method.PUT,
+            "http://10.0.2.2:8090/start?quizId=" +intent.extras.get("QUIZ_ID"),
+            Response.Listener<String> { response ->
+                Log.wtf("started quiz", response)
+            },
+            Response.ErrorListener { Log.wtf("error", "a" )})
+        queue.add(stringRequest)
+
     }
 
 
@@ -57,6 +70,8 @@ class WaitingForPlayersActivity : AppCompatActivity() {
                 .commit()
         }
     }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_waiting_for_players)
@@ -64,7 +79,31 @@ class WaitingForPlayersActivity : AppCompatActivity() {
 
         val queue = Volley.newRequestQueue(this)
 
-        val quizId = intent.extras.get("QUIZ_ID")
+        val quizId  = intent.extras.get("QUIZ_ID")
+        var pendingRequests = 0;
+        var requests = mutableListOf<StringRequest>()
+        val waitABitThenUpdate= {
+            pendingRequests = requests.count()
+            Handler().postDelayed(
+                {
+                    requests.forEach {queue.add(it)}
+                }, 1000)
+
+        }
+
+        val onRequestComplete = {
+
+            pendingRequests-=1
+            Log.wtf("aaa", "pendingRequests: "+ pendingRequests)
+            if (pendingRequests <=0){
+                waitABitThenUpdate()
+            }
+        }
+
+        val requestFinishedListener: RequestFinishedListener<Any> = RequestFinishedListener{
+            onRequestComplete()
+        }
+
 
         val stringRequest = StringRequest(
             Request.Method.GET,
@@ -84,10 +123,29 @@ class WaitingForPlayersActivity : AppCompatActivity() {
             },
             Response.ErrorListener { Log.wtf("error", "a" )})
 
-        queue.add(stringRequest)
-        queue.add(getPlayersWithQuestions)
-        queue.addRequestFinishedListener<Any>{ queue.add(stringRequest) }
+        val hasStarted = StringRequest(
+            Request.Method.GET,
+            "http://10.0.2.2:8090/hasStarted?quizId=" +quizId,
+            Response.Listener<String> { response ->
+                Log.wtf("has started", response)
+                if (response == "true") {
+                    queue.removeRequestFinishedListener(requestFinishedListener)
+                    val intent = Intent(this, QuestionActivity::class.java)
+//                intent.putExtra("QUIZ_ID", intent.extras.get("QUIZ_ID") as String)
+//                intent.putExtra("PLAYER_NAME", intent.extras.get("PLAYER_NAME") as String)
+//                intent.putExtra("HOST", intent.extras.get("HOST") as Boolean)
+                    startActivity(intent)
+                }
 
+            },
+            Response.ErrorListener { Log.wtf("error", "a" )})
+
+        requests.add(stringRequest)
+        requests.add(getPlayersWithQuestions)
+        requests.add(hasStarted)
+
+        waitABitThenUpdate()
+        queue.addRequestFinishedListener(requestFinishedListener)
 
     }
 }

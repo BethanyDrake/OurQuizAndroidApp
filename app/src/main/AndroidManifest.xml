@@ -35,11 +35,15 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.sycorax.ourquiz.MainActivity"/>
         </activity>
-        <activity android:name=".WaitingForPlayersActivity"
-                  android:label="Waiting For Players">
+        <activity
+                android:name=".WaitingForPlayersActivity"
+                android:label="Waiting For Players">
         </activity>
-        <activity android:name=".SubmitQuestionActivity"
-                  android:label="Submit A Question">
+        <activity
+                android:name=".SubmitQuestionActivity"
+                android:label="Submit A Question">
+        </activity>
+        <activity android:name=".QuestionActivity">
         </activity>
     </application>
 
