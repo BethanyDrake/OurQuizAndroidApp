@@ -34,6 +34,7 @@ class HostActivity : AppCompatActivity() {
             Response.Listener<String> { response ->
                 val intent = Intent(this, WaitingForPlayersActivity::class.java)
                 intent.putExtra("QUIZ_ID", quizId);
+                intent.putExtra("HOST", true);
                 startActivity(intent)
             },
             Response.ErrorListener { textView.text = "That didn't work!" })

@@ -51,10 +51,11 @@ class WaitingForPlayersActivity : AppCompatActivity() {
 
 
     private fun addHostFragment(){
-        supportFragmentManager.beginTransaction()
-            .add(R.id.hostSectionFragmentContainer, WaitingForPlayersHostSection.newInstance())
-            .commit()
-
+        if (intent.extras.get("HOST") == true) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.hostSectionFragmentContainer, WaitingForPlayersHostSection.newInstance())
+                .commit()
+        }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
