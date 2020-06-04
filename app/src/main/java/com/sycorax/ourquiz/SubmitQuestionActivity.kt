@@ -11,10 +11,10 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import org.json.JSONArray
-import org.json.JSONObject
+import com.beust.klaxon.Klaxon
 
 class SubmitQuestionActivity : AppCompatActivity() {
+    data class SubmissionBody(val quizId: String, val question: Question)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,8 +25,8 @@ class SubmitQuestionActivity : AppCompatActivity() {
         val radioGroup: RadioGroup = findViewById(R.id.radioGroup)
         val correctAnswerButtonId = radioGroup.checkedRadioButtonId
         val radioButtonIds = listOf(R.id.A, R.id.B, R.id.C, R.id.D)
-        val correctAnswer = radioButtonIds.indexOf(correctAnswerButtonId)
-        val answerTexts: List<String> = listOf(R.id.TextA, R.id.TextB, R.id.TextC, R.id.TextD).map { (findViewById<EditText>(it)).text.toString()  }
+//        val correctAnswer = radioButtonIds.indexOf(correctAnswerButtonId)
+//        val answerTexts: List<String> = listOf(R.id.TextA, R.id.TextB, R.id.TextC, R.id.TextD).map { (findViewById<EditText>(it)).text.toString()  }
         val questionText = findViewById<EditText>(R.id.questionText).text.toString()
 
 
@@ -54,13 +54,9 @@ class SubmitQuestionActivity : AppCompatActivity() {
             }
         ) {
             override fun getBody(): ByteArray {
-                val jsonObject = JSONObject()
-                jsonObject.put("questionText", questionText)
-                jsonObject.put("possibleAnswers", JSONArray(answerTexts))
-                jsonObject.put("quizId", quizId)
-                jsonObject.put("playerName", playerName)
-
-                return jsonObject.toString().toByteArray(Charsets.UTF_8)
+                val question = Question(questionText, playerName)
+                val submissionBody = SubmissionBody(quizId, question)
+                return Klaxon().toJsonString(submissionBody).toByteArray(Charsets.UTF_8)
             }
 
             override fun getBodyContentType(): String {
