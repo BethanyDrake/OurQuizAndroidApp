@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.provider.AlarmClock.EXTRA_MESSAGE
 import android.view.View
 
-class MainActivity : AppCompatActivity() {
+open class MainActivity(val intentFactory: IntentFactory = IntentFactory()) : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -14,11 +14,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun join(view: View) {
-        val intent = Intent(this, JoinActivity::class.java)
+        val intent = intentFactory.create(this, JoinActivity::class.java)
         startActivity(intent)
     }
     fun host(view: View) {
-        val intent = Intent(this, HostActivity::class.java)
+        val intent = intentFactory.create(this, HostActivity::class.java)
         startActivity(intent)
     }
 }
