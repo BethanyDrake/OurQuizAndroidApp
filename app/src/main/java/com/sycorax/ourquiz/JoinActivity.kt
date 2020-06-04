@@ -16,7 +16,8 @@ import kotlinx.android.synthetic.main.join_activity.*
 
 open class JoinActivity (
     val volleyRequestQueueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory(),
-    val volleyStringRequestFactory: StringRequestFactory = StringRequestFactory()
+    val volleyStringRequestFactory: StringRequestFactory = StringRequestFactory(),
+    val intentFactory: IntentFactory = IntentFactory()
 )
     : AppCompatActivity() {
 
@@ -33,7 +34,7 @@ open class JoinActivity (
     fun onResponse(response: String) {
         textView.text = response
         if (response.equals("ok", true)) {
-            val intent = Intent(this, SubmitQuestionActivity::class.java)
+            val intent = intentFactory.create(this, SubmitQuestionActivity::class.java)
             intent.putExtra("QUIZ_ID", quizId);
             intent.putExtra("PLAYER_NAME", name);
             startActivity(intent)

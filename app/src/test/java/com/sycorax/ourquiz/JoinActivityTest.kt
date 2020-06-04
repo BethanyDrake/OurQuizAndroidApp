@@ -10,10 +10,7 @@ import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.verify
+import io.mockk.*
 import org.junit.Assert
 import org.junit.Test
 
@@ -29,7 +26,7 @@ class JoinActivityTest {
 
 
 
-    fun setUpJoinActivity(mStringRequestFactory: StringRequestFactory, mQueue: RequestQueue, mStringRequest: StringRequest):JoinActivity {
+    fun setUpJoinActivity(mStringRequestFactory: StringRequestFactory = mockk(relaxed = true), mQueue: RequestQueue = mockk(relaxed = true), mStringRequest: StringRequest = mockk(relaxed = true), intentFactory:IntentFactory = IntentFactory()):JoinActivity {
 
         class MQueueFactory(private val queue: RequestQueue) : VolleyRequestQueueFactory() {
             override fun create(context: Context): RequestQueue {
@@ -40,7 +37,7 @@ class JoinActivityTest {
         val mockQuizIdField = createMockEditText("a-quiz-id")
         val mockNameField = createMockEditText("my-name")
 
-        class SpyJoinActivity(queueFactory: VolleyRequestQueueFactory, stringRequestFactory: StringRequestFactory) : JoinActivity(queueFactory, stringRequestFactory) {
+        class SpyJoinActivity(queueFactory: VolleyRequestQueueFactory, stringRequestFactory: StringRequestFactory, intentFactory: IntentFactory) : JoinActivity(queueFactory, stringRequestFactory, intentFactory) {
             override fun <T : View> findViewById(id: Int): T {
                 println("finding view")
                 return when (id) {
@@ -54,7 +51,7 @@ class JoinActivityTest {
 
 
         every {  mStringRequestFactory.create(any(), any(), any(), any()) } returns mStringRequest
-        val joinActivity = SpyJoinActivity(MQueueFactory(mQueue), mStringRequestFactory )
+        val joinActivity = SpyJoinActivity(MQueueFactory(mQueue), mStringRequestFactory, intentFactory )
         return joinActivity
     }
 
@@ -84,7 +81,24 @@ class JoinActivityTest {
     }
 
     @Test
-    fun join_whenTheresAResponse_opensSubmitQuesionActivity (){
+    fun join_whenResponseIsOK_opensSubmitQuesionActivity (){
+
+        val mIntentFactory = mockk<IntentFactory>()
+        val joinActivity = spyk(setUpJoinActivity(intentFactory=mIntentFactory))
+
+        every {joinActivity.startActivity(any())} returns Unit
+        val createdIntentForClass = CapturingSlot<Class<Any>>()
+        every {
+            mIntentFactory.create(any(), capture(createdIntentForClass))
+        } returns mockk(createdIntentForClass.toString(), relaxed = true)
+
+
+        joinActivity.join(View(joinActivity))
+        joinActivity.onResponse("OK")
+
+        verify {
+            joinActivity.startActivity(any())
+        }
 
     }
 
