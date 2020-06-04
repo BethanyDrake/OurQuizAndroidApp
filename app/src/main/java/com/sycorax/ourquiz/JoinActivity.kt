@@ -3,8 +3,8 @@ package com.sycorax.ourquiz
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -14,7 +14,11 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.join_activity.*
 
-class JoinActivity : AppCompatActivity() {
+open class JoinActivity (
+    val volleyRequestQueueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory(),
+    val volleyStringRequestFactory: StringRequestFactory = StringRequestFactory()
+)
+    : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,19 +28,19 @@ class JoinActivity : AppCompatActivity() {
 
     fun join(view: View) {
         val textView: TextView = findViewById(R.id.textView)
-        textView.setText("Connecting...")
+        textView.text = "Connecting..."
         val quizIdInputView: EditText = findViewById(R.id.editText)
 
         val nameInputView: EditText = findViewById(R.id.nameField)
-        val name = nameInputView.text
+        val name:String = nameInputView.text.toString()
 
-        val queue = Volley.newRequestQueue(this)
-        val quizId = quizIdInputView.text
-        val url = "http://10.0.2.2:8090/join?" +
+        val queue = volleyRequestQueueFactory.create(this)
+        val quizId:String = quizIdInputView.text.toString()
+        val url:String = "http://10.0.2.2:8090/join?" +
                 "quizId=" + quizId + "&" +
                 "name="+name
 
-        val stringRequest = StringRequest(
+        val stringRequest = volleyStringRequestFactory.create(
             Request.Method.GET, url,
             Response.Listener<String> { response ->
                 textView.text = response
@@ -48,7 +52,6 @@ class JoinActivity : AppCompatActivity() {
                 }
             },
             Response.ErrorListener { textView.text = "That didn't work!" })
-
 
         queue.add(stringRequest)
     }

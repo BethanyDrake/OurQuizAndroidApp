@@ -13,7 +13,6 @@ class MainActivityTest {
             return MockIntent(activityClass.simpleName)
         }
     }
-
     class SpyMainActivity : MainActivity(MIntentFactory()) {
         var startedActivity = false
         var startedWith:Intent? = null
