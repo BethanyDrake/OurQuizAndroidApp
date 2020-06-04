@@ -26,6 +26,20 @@ open class JoinActivity (
         setContentView(R.layout.join_activity)
     }
 
+    var quizId = ""
+    var name = ""
+
+
+    fun onResponse(response: String) {
+        textView.text = response
+        if (response.equals("ok", true)) {
+            val intent = Intent(this, SubmitQuestionActivity::class.java)
+            intent.putExtra("QUIZ_ID", quizId);
+            intent.putExtra("PLAYER_NAME", name);
+            startActivity(intent)
+        }
+    }
+
     fun join(view: View) {
         val textView: TextView = findViewById(R.id.textView)
         textView.text = "Connecting..."
@@ -42,14 +56,7 @@ open class JoinActivity (
 
         val stringRequest = volleyStringRequestFactory.create(
             Request.Method.GET, url,
-            Response.Listener<String> { response ->
-                textView.text = response
-                if (response.equals("ok", true)) {
-                    val intent = Intent(this, SubmitQuestionActivity::class.java)
-                    intent.putExtra("QUIZ_ID", quizId);
-                    intent.putExtra("PLAYER_NAME", name);
-                    startActivity(intent)
-                }
+            Response.Listener<String> { response -> onResponse(response)
             },
             Response.ErrorListener { textView.text = "That didn't work!" })
 

@@ -3,6 +3,7 @@ package com.sycorax.ourquiz
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.EditText
@@ -19,6 +20,16 @@ class HostActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_host)
     }
+
+//
+//    fun onResponse(response: String)
+//    {
+//            val intent = Intent(this, WaitingForPlayersActivity::class.java)
+//            intent.putExtra("QUIZ_ID", quizId);
+//            intent.putExtra("HOST", true);
+//            startActivity(intent)
+//    }
+
 
     fun host(view: View) {
         val textView: TextView = findViewById(R.id.textView)

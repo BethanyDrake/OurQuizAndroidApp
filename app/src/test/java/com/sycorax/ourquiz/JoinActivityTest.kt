@@ -18,9 +18,6 @@ import org.junit.Assert
 import org.junit.Test
 
 class JoinActivityTest {
-
-
-
     private fun createMockEditText(text:String) :EditText{
         val mEditText = mockk<EditText>(relaxed = true)
         val mEditTextEditable = mockk<Editable>(relaxed = true)
@@ -29,8 +26,10 @@ class JoinActivityTest {
 
         return mEditText
     }
-    @Test
-    fun join_createsARequestDetails_andAddsItToTheQueue() {
+
+
+
+    fun setUpJoinActivity(mStringRequestFactory: StringRequestFactory, mQueue: RequestQueue, mStringRequest: StringRequest):JoinActivity {
 
         class MQueueFactory(private val queue: RequestQueue) : VolleyRequestQueueFactory() {
             override fun create(context: Context): RequestQueue {
@@ -53,21 +52,39 @@ class JoinActivityTest {
             }
         }
 
+
+        every {  mStringRequestFactory.create(any(), any(), any(), any()) } returns mStringRequest
+        val joinActivity = SpyJoinActivity(MQueueFactory(mQueue), mStringRequestFactory )
+        return joinActivity
+    }
+
+    @Test
+    fun join_createsARequestDetails_andAddsItToTheQueue() {
+
         val mQueue = mockk<RequestQueue>(relaxed = true)
         val mStringRequest = mockk<StringRequest>(relaxed = true)
         val mStringRequestFactory = mockk<StringRequestFactory>(relaxed =true);
-        every {  mStringRequestFactory.create(any(), any(), any(), any()) } returns mStringRequest
-        val joinActivity = SpyJoinActivity(MQueueFactory(mQueue), mStringRequestFactory )
+
+
+        val joinActivity = setUpJoinActivity(mStringRequestFactory, mQueue, mStringRequest)
+
 
         joinActivity.join(mockk<View>(relaxed = true))
 
+
         var expectedMethod = Request.Method.GET
         var expectedURL = "http://10.0.2.2:8090/join?quizId=a-quiz-id&name=my-name"
+
 
         verify(atMost = 1)  { mStringRequestFactory.create(expectedMethod, expectedURL, any(), any()) }
 
         verify(atMost = 1) { mQueue.add(mStringRequest) }
 
+
+    }
+
+    @Test
+    fun join_whenTheresAResponse_opensSubmitQuesionActivity (){
 
     }
 
