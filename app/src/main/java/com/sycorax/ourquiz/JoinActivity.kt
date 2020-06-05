@@ -47,10 +47,10 @@ open class JoinActivity (
         val quizIdInputView: EditText = findViewById(R.id.editText)
 
         val nameInputView: EditText = findViewById(R.id.nameField)
-        val name:String = nameInputView.text.toString()
+        name = nameInputView.text.toString()
 
         val queue = volleyRequestQueueFactory.create(this)
-        val quizId:String = quizIdInputView.text.toString()
+        quizId = quizIdInputView.text.toString()
         val url:String = "http://10.0.2.2:8090/join?" +
                 "quizId=" + quizId + "&" +
                 "name="+name

@@ -69,8 +69,8 @@ class JoinActivityTest {
         joinActivity.join(mockk<View>(relaxed = true))
 
 
-        var expectedMethod = Request.Method.GET
-        var expectedURL = "http://10.0.2.2:8090/join?quizId=a-quiz-id&name=my-name"
+        val expectedMethod = Request.Method.GET
+        val expectedURL = "http://10.0.2.2:8090/join?quizId=a-quiz-id&name=my-name"
 
 
         verify(atMost = 1)  { mStringRequestFactory.create(expectedMethod, expectedURL, any(), any()) }
@@ -81,17 +81,17 @@ class JoinActivityTest {
     }
 
     @Test
-    fun join_whenResponseIsOK_opensSubmitQuesionActivity (){
+    fun join_whenResponseIsOK_opensSubmitQuesionActivity_withDetailsAsExtras (){
 
         val mIntentFactory = mockk<IntentFactory>()
         val joinActivity = spyk(setUpJoinActivity(intentFactory=mIntentFactory))
 
-        every {joinActivity.startActivity(any())} returns Unit
-        val createdIntentForClass = CapturingSlot<Class<Any>>()
-        every {
-            mIntentFactory.create(any(), capture(createdIntentForClass))
-        } returns mockk(createdIntentForClass.toString(), relaxed = true)
+        val startedActivityWithIntent = CapturingSlot<Intent>()
+        every {joinActivity.startActivity(capture(startedActivityWithIntent))} returns Unit
 
+        every {
+            mIntentFactory.create(any(), SubmitQuestionActivity::class.java)
+        } returns mockk(relaxed = true)
 
         joinActivity.join(View(joinActivity))
         joinActivity.onResponse("OK")
@@ -100,6 +100,8 @@ class JoinActivityTest {
             joinActivity.startActivity(any())
         }
 
+        verify {startedActivityWithIntent.captured.putExtra("QUIZ_ID", "a-quiz-id")}
+        verify {startedActivityWithIntent.captured.putExtra("PLAYER_NAME", "my-name")}
     }
 
 }
