@@ -21,8 +21,6 @@ class JoinActivityTest {
         return mEditText
     }
 
-
-
     private fun setUpJoinActivity(mStringRequestFactory: StringRequestFactory = mockk(relaxed = true), mQueue: RequestQueue = mockk(relaxed = true), mStringRequest: StringRequest = mockk(relaxed = true), intentFactory:IntentFactory = IntentFactory()):JoinActivity {
 
         val mockQuizIdField = createMockEditText("a-quiz-id")
@@ -39,7 +37,6 @@ class JoinActivityTest {
                 }
             }
         }
-
 
         every {  mStringRequestFactory.create(any(), any(), any(), any()) } returns mStringRequest
         val mQueueFactory = mockk<VolleyRequestQueueFactory>()
