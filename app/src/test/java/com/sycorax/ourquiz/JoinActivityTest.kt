@@ -1,9 +1,7 @@
 package com.sycorax.ourquiz
 
-import android.content.Context
 import android.content.Intent
 import android.text.Editable
-import android.view.TextureView
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -11,7 +9,6 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
 import io.mockk.*
-import org.junit.Assert
 import org.junit.Test
 
 class JoinActivityTest {
@@ -26,13 +23,7 @@ class JoinActivityTest {
 
 
 
-    fun setUpJoinActivity(mStringRequestFactory: StringRequestFactory = mockk(relaxed = true), mQueue: RequestQueue = mockk(relaxed = true), mStringRequest: StringRequest = mockk(relaxed = true), intentFactory:IntentFactory = IntentFactory()):JoinActivity {
-
-        class MQueueFactory(private val queue: RequestQueue) : VolleyRequestQueueFactory() {
-            override fun create(context: Context): RequestQueue {
-                return queue
-            }
-        }
+    private fun setUpJoinActivity(mStringRequestFactory: StringRequestFactory = mockk(relaxed = true), mQueue: RequestQueue = mockk(relaxed = true), mStringRequest: StringRequest = mockk(relaxed = true), intentFactory:IntentFactory = IntentFactory()):JoinActivity {
 
         val mockQuizIdField = createMockEditText("a-quiz-id")
         val mockNameField = createMockEditText("my-name")
@@ -51,8 +42,9 @@ class JoinActivityTest {
 
 
         every {  mStringRequestFactory.create(any(), any(), any(), any()) } returns mStringRequest
-        val joinActivity = SpyJoinActivity(MQueueFactory(mQueue), mStringRequestFactory, intentFactory )
-        return joinActivity
+        val mQueueFactory = mockk<VolleyRequestQueueFactory>()
+        every { mQueueFactory.create(any()) } returns mQueue
+        return SpyJoinActivity(mQueueFactory, mStringRequestFactory, intentFactory )
     }
 
     @Test

@@ -1,12 +1,10 @@
 package com.sycorax.ourquiz
 
-import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.AlarmClock.EXTRA_MESSAGE
 import android.view.View
 
-open class MainActivity(val intentFactory: IntentFactory = IntentFactory()) : AppCompatActivity() {
+class MainActivity(val intentFactory: IntentFactory = IntentFactory()) : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
