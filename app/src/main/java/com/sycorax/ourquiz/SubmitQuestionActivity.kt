@@ -31,17 +31,38 @@ class RequestWithBodyFactory {
     }
 }
 
+data class QuestionSubmissionBody(val quizId: String, val question: Question)
 
-class SubmitQuestionActivity(
+open class SubmitQuestionActivity(
     val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory(),
     val requestWithBodyFactory: RequestWithBodyFactory = RequestWithBodyFactory()
     ) : AppCompatActivity() {
-    data class SubmissionBody(val quizId: String, val question: Question)
+   
+
+    var quizId = ""
+    var playerName = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        println("intent:" + intent)
+
         setContentView(R.layout.activity_submit_question)
     }
+
+    val onResponse = Response.Listener<String> { response ->
+        if (response == "OK") {
+            val intent = Intent(this, WaitingForPlayersActivity::class.java)
+            intent.putExtra("QUIZ_ID", quizId);
+            intent.putExtra("PLAYER_NAME", playerName);
+            startActivity(intent)
+        }
+    }
+
+    val onError =  Response.ErrorListener {
+        Log.d("Error.Response", "error")
+    }
+
 
     fun submit(view: View) {
 //        val radioGroup: RadioGroup = findViewById(R.id.radioGroup)
@@ -52,36 +73,24 @@ class SubmitQuestionActivity(
         val questionText = findViewById<EditText>(R.id.questionText).text.toString()
 
 
-        val quizId: String = intent.extras.get("QUIZ_ID").toString();
-        val playerName: String = intent.extras.get("PLAYER_NAME").toString();
+        quizId = intent.extras.get("QUIZ_ID").toString();
+        playerName = intent.extras.get("PLAYER_NAME").toString();
 
         val url = "http://10.0.2.2:8090/submit"
 
         val queue = queueFactory.create(this)
 
         val question = Question(questionText, playerName)
-        val submissionBody = SubmissionBody(quizId, question)
+        val submissionBody = QuestionSubmissionBody(quizId, question)
         val requestBody = Klaxon().toJsonString(submissionBody)
 
+        println("about to create: " + requestBody);
         val putRequest = requestWithBodyFactory.create(
             requestBody,
             Request.Method.PUT,
             url,
-            Response.Listener { response ->
-                                // response
-                if (response == "OK") {
-                    val intent = Intent(this, WaitingForPlayersActivity::class.java)
-                    intent.putExtra("QUIZ_ID", quizId);
-                    intent.putExtra("PLAYER_NAME", playerName);
-                    startActivity(intent)
-                }
-                Log.d("Response", response)
-            },
-            Response.ErrorListener {
-                                // error
-                Log.d("Error.Response", "error")
-            }
-
+            onResponse,
+            onError
         )
 
         queue.add(putRequest)
