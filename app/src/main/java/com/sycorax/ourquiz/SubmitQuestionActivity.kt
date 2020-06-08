@@ -35,28 +35,25 @@ data class QuestionSubmissionBody(val quizId: String, val question: Question)
 
 open class SubmitQuestionActivity(
     val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory(),
-    val requestWithBodyFactory: RequestWithBodyFactory = RequestWithBodyFactory()
+    val requestWithBodyFactory: RequestWithBodyFactory = RequestWithBodyFactory(),
+    val intentFactory: IntentFactory = IntentFactory()
     ) : AppCompatActivity() {
-   
-
-    var quizId = ""
-    var playerName = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        println("intent:" + intent)
-
         setContentView(R.layout.activity_submit_question)
     }
 
-    val onResponse = Response.Listener<String> { response ->
-        if (response == "OK") {
-            val intent = Intent(this, WaitingForPlayersActivity::class.java)
-            intent.putExtra("QUIZ_ID", quizId);
-            intent.putExtra("PLAYER_NAME", playerName);
-            startActivity(intent)
+    fun getRequestListener(): Response.Listener<String> {
+        val requestListener = Response.Listener<String> { response ->
+            if (response == "OK") {
+                val newIntent = intentFactory.create(this, WaitingForPlayersActivity::class.java)
+                newIntent.putExtra("QUIZ_ID", intent.extras?.get("QUIZ_ID").toString())
+                newIntent.putExtra("PLAYER_NAME", intent.extras?.get("PLAYER_NAME").toString())
+                startActivity(newIntent)
+            }
         }
+        return requestListener
     }
 
     val onError =  Response.ErrorListener {
@@ -73,8 +70,8 @@ open class SubmitQuestionActivity(
         val questionText = findViewById<EditText>(R.id.questionText).text.toString()
 
 
-        quizId = intent.extras.get("QUIZ_ID").toString();
-        playerName = intent.extras.get("PLAYER_NAME").toString();
+        val quizId = intent.extras?.get("QUIZ_ID").toString();
+        val playerName = intent.extras?.get("PLAYER_NAME").toString();
 
         val url = "http://10.0.2.2:8090/submit"
 
@@ -83,13 +80,11 @@ open class SubmitQuestionActivity(
         val question = Question(questionText, playerName)
         val submissionBody = QuestionSubmissionBody(quizId, question)
         val requestBody = Klaxon().toJsonString(submissionBody)
-
-        println("about to create: " + requestBody);
         val putRequest = requestWithBodyFactory.create(
             requestBody,
             Request.Method.PUT,
             url,
-            onResponse,
+            getRequestListener(),
             onError
         )
 
