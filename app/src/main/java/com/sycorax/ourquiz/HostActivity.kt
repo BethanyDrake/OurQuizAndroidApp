@@ -14,7 +14,12 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.activity_host.*
 
-class HostActivity : AppCompatActivity() {
+class HostActivity (
+    val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory(),
+    val stringRequestFactory: StringRequestFactory = StringRequestFactory()
+)
+
+    : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,11 +41,11 @@ class HostActivity : AppCompatActivity() {
         textView.setText("Connecting...")
         val quizIdInputView: EditText = findViewById(R.id.editText)
 
-        val queue = Volley.newRequestQueue(this)
+        val queue = queueFactory.create(this)
         val quizId = quizIdInputView.text
         val url = "http://10.0.2.2:8090/create?quizId="+ quizId
 
-        val stringRequest = StringRequest(
+        val stringRequest = stringRequestFactory.create(
             Request.Method.GET, url,
             Response.Listener<String> { response ->
                 val intent = Intent(this, WaitingForPlayersActivity::class.java)
