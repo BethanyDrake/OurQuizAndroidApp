@@ -61,12 +61,21 @@ open class SubmitQuestionActivity(
     }
 
 
+    private fun getCorrectAnswer() : Int {
+        val radioButtonIds = listOf(R.id.A, R.id.B, R.id.C, R.id.D)
+        val radioGroup: RadioGroup = findViewById(R.id.radioGroup)
+
+        return radioButtonIds.indexOf(radioGroup.checkedRadioButtonId)
+    }
+
+
+
     fun submit(view: View) {
 //        val radioGroup: RadioGroup = findViewById(R.id.radioGroup)
 //        val correctAnswerButtonId = radioGroup.checkedRadioButtonId
-//        val radioButtonIds = listOf(R.id.A, R.id.B, R.id.C, R.id.D)
+
 //        val correctAnswer = radioButtonIds.indexOf(correctAnswerButtonId)
-//        val answerTexts: List<String> = listOf(R.id.TextA, R.id.TextB, R.id.TextC, R.id.TextD).map { (findViewById<EditText>(it)).text.toString()  }
+        val answerTexts: List<String> = listOf(R.id.TextA, R.id.TextB, R.id.TextC, R.id.TextD).map { (findViewById<EditText>(it)).text.toString()  }
         val questionText = findViewById<EditText>(R.id.questionText).text.toString()
 
 
@@ -77,7 +86,8 @@ open class SubmitQuestionActivity(
 
         val queue = queueFactory.create(this)
 
-        val question = Question(questionText, playerName)
+
+        val question = Question(questionText, playerName, answerTexts, getCorrectAnswer())
         val submissionBody = QuestionSubmissionBody(quizId, question)
         val requestBody = Klaxon().toJsonString(submissionBody)
         val putRequest = requestWithBodyFactory.create(

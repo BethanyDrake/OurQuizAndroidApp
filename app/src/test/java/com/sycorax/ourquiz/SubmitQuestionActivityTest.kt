@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.text.Editable
 import android.view.View
 import android.widget.EditText
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import com.beust.klaxon.Klaxon
 import io.mockk.*
 import io.mockk.MockKSettings.relaxed
@@ -24,9 +26,6 @@ class SubmitQuestionActivityTest {
         return mIntent
     }
 
-
-
-
     @Test
     fun `submit-- submits question text`() {
         val mRequestWithBodyFactory = mockk<RequestWithBodyFactory>()
@@ -36,12 +35,16 @@ class SubmitQuestionActivityTest {
 
         val submitQuestionActivity = spyk(SubmitQuestionActivity(mockk(relaxed = true), mRequestWithBodyFactory))
 
+        every {  submitQuestionActivity.findViewById<EditText>(any()) } returns mockk(relaxed = true)
 
         val questionTextView = createMockEditText("Question text?")
         every {  submitQuestionActivity.findViewById<EditText>(R.id.questionText) } returns questionTextView
 
         val mIntent: Intent =  mockk(relaxed = true)
         every {  submitQuestionActivity.intent } returns mIntent
+
+
+        every {  submitQuestionActivity.findViewById<RadioGroup>(R.id.radioGroup) } returns mockk(relaxed = true)
 
         submitQuestionActivity.submit(View(submitQuestionActivity))
 
@@ -64,7 +67,43 @@ class SubmitQuestionActivityTest {
 
         val submitQuestionActivity = spyk(SubmitQuestionActivity(mockk(relaxed = true), mRequestWithBodyFactory))
 
-        every {  submitQuestionActivity.findViewById<EditText>(R.id.questionText) } returns mockk(relaxed = true)
+        every {  submitQuestionActivity.findViewById<EditText>(any()) } returns mockk(relaxed = true)
+
+        val extras = mapOf(Pair("QUIZ_ID", "a-quiz-id"), Pair("PLAYER_NAME", "my-name"))
+        val mIntent: Intent = createMockIntentWithExtras(extras)
+        every {  submitQuestionActivity.intent } returns mIntent
+
+
+        every {  submitQuestionActivity.findViewById<RadioGroup>(R.id.radioGroup) } returns mockk(relaxed = true)
+
+        submitQuestionActivity.submit(View(submitQuestionActivity))
+
+        Assert.assertTrue(capturedBody.isCaptured)
+        val body: String = capturedBody.captured
+        val parsedBody = Klaxon().parse<QuestionSubmissionBody>(body)
+
+
+        Assert.assertNotNull(parsedBody)
+        Assert.assertEquals("a-quiz-id", parsedBody?.quizId)
+        Assert.assertEquals("my-name", parsedBody?.question?.submittedBy)
+
+    }
+
+    @Test
+    fun `submit-- submits possible answers`() {
+        val mRequestWithBodyFactory = mockk<RequestWithBodyFactory>()
+
+        val capturedBody:CapturingSlot<String> = CapturingSlot()
+        every { mRequestWithBodyFactory.create(capture(capturedBody), any(), any(), any(), any()) } returns mockk(relaxed = true)
+
+
+        val submitQuestionActivity = spyk(SubmitQuestionActivity(mockk(relaxed = true), mRequestWithBodyFactory))
+
+        val mEditText = createMockEditText("an option")
+
+        every {  submitQuestionActivity.findViewById<EditText>(any()) } returns mEditText
+
+        every {  submitQuestionActivity.findViewById<RadioGroup>(R.id.radioGroup) } returns mockk(relaxed = true)
 
         val extras = mapOf(Pair("QUIZ_ID", "a-quiz-id"), Pair("PLAYER_NAME", "my-name"))
         val mIntent: Intent = createMockIntentWithExtras(extras)
@@ -79,9 +118,42 @@ class SubmitQuestionActivityTest {
 
 
         Assert.assertNotNull(parsedBody)
-        Assert.assertEquals("a-quiz-id", parsedBody?.quizId)
-        Assert.assertEquals("my-name", parsedBody?.question?.submittedBy)
+        Assert.assertEquals(4, parsedBody?.question?.answers?.size)
 
+    }
+
+    @Test
+    fun `submit-- submits correct answer id`() {
+
+        val mRequestWithBodyFactory = mockk<RequestWithBodyFactory>()
+
+        val capturedBody:CapturingSlot<String> = CapturingSlot()
+        every { mRequestWithBodyFactory.create(capture(capturedBody), any(), any(), any(), any()) } returns mockk(relaxed = true)
+
+        val submitQuestionActivity = spyk(SubmitQuestionActivity(mockk(relaxed = true), mRequestWithBodyFactory))
+
+
+        every {  submitQuestionActivity.findViewById<EditText>( any()) } returns mockk(relaxed = true)
+
+        val mRadioGroup = mockk<RadioGroup>()
+        every { mRadioGroup.checkedRadioButtonId } returns R.id.C
+        every {  submitQuestionActivity.findViewById<RadioGroup>(R.id.radioGroup) } returns mRadioGroup
+
+
+        val extras = mapOf(Pair("QUIZ_ID", "a-quiz-id"), Pair("PLAYER_NAME", "my-name"))
+        val mIntent: Intent = createMockIntentWithExtras(extras)
+        every {  submitQuestionActivity.intent } returns mIntent
+
+
+        submitQuestionActivity.submit(View(submitQuestionActivity))
+
+        Assert.assertTrue(capturedBody.isCaptured)
+        val body: String = capturedBody.captured
+        val parsedBody = Klaxon().parse<QuestionSubmissionBody>(body)
+
+
+        Assert.assertNotNull(parsedBody)
+        Assert.assertEquals(2, parsedBody?.question?.correctQuestionId)
     }
 
     @Test
