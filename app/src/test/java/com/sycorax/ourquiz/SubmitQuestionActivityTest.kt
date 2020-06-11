@@ -14,18 +14,6 @@ import org.junit.Assert
 import org.junit.Test
 
 class SubmitQuestionActivityTest {
-
-    fun createMockIntentWithExtras(extras: Map<String, String>): Intent {
-        val mIntent: Intent = mockk(relaxed = true)
-        val mExtras: Bundle = mockk()
-        extras.forEach{key, value ->
-            every { mExtras.get(key) } returns value
-        }
-
-        every { mIntent.extras } returns mExtras
-        return mIntent
-    }
-
     @Test
     fun `submit-- submits question text`() {
         val mRequestWithBodyFactory = mockk<RequestWithBodyFactory>()

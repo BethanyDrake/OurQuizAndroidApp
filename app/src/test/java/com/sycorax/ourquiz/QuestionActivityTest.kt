@@ -85,4 +85,18 @@ class QuestionActivityTest {
         Assert.assertTrue(capturingSlotD.isCaptured)
         Assert.assertEquals("option 4", capturingSlotD.captured)
     }
+
+    @Test
+    fun `on select -- opens waiting screen -- with extras`() {
+        val mIntentFactory = mockk<IntentFactory>()
+        val mIntent = mockk<Intent>(relaxed = true)
+
+        every {  mIntentFactory.create(any(), WaitingForPlayersActivity::class.java) } returns mIntent
+        val activity = spyk(QuestionActivity(mockk(relaxed = true), mockk(relaxed=true), mIntentFactory))
+
+        every { activity.startActivity(any()) } returns Unit
+
+        activity.onSelectAnswer(mockk())
+        verify { activity.startActivity(mIntent) }
+    }
 }

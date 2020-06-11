@@ -31,7 +31,9 @@
                     android:id="@+id/radioGroup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:onClick="onSelectAnswer"
+            >
                 <RadioButton
                         android:layout_width="match_parent"
                         android:layout_height="50dp" android:id="@+id/A"
@@ -51,6 +53,12 @@
             </RadioGroup>
 
         </LinearLayout>
+
+        <Button
+                android:text="Submit"
+                android:onClick="onSelectAnswer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/button2"/>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

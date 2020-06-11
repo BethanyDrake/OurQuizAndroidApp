@@ -3,6 +3,7 @@ package com.sycorax.ourquiz
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import com.android.volley.Request
@@ -13,7 +14,8 @@ import com.beust.klaxon.Klaxon
 
 class QuestionActivity(
     val requestFactory: StringRequestFactory = StringRequestFactory(),
-    val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory()
+    val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory(),
+    val intentFactory: IntentFactory = IntentFactory()
 ) : AppCompatActivity() {
 
 
@@ -41,8 +43,6 @@ class QuestionActivity(
             Response.ErrorListener { Log.wtf("bbb", "failed to get question 2" )})
 
         queue.add(stringRequest)
-
-
     }
 
     private fun populateUiWithQuestionDetails(question: Question) {
@@ -56,6 +56,17 @@ class QuestionActivity(
         }
 
      }
+
+    fun getQuizId() : String {
+        return intent.extras.get("QUIZ_ID").toString()
+    }
+
+    fun onSelectAnswer(view: View) {
+        val intent = intentFactory.create(this, WaitingForPlayersActivity::class.java)
+        intent.putExtra("QUIZ_ID", getQuizId())
+        intent.putExtra("STAGE", 0)
+        startActivity(intent)
+    }
 
     fun innerOnCreate() {
         val quizId  = intent.extras.get("QUIZ_ID")

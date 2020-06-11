@@ -79,7 +79,7 @@ class GetPlayersRequestFactory(
     val requestFactory: StringRequestFactory,
     val context: Context,
     val playerListView: LinearLayout,
-    val answeredQuestion: Boolean,
+    val waiting: Boolean,
     val quizId: String
 ) {
     private fun displayPlayers(nameList: List<String>) {
@@ -88,7 +88,7 @@ class GetPlayersRequestFactory(
         nameList.forEach {
             val textView = TextView(context)
             var mark = ""
-            if (answeredQuestion) mark = " ✅";
+            if (!waiting) mark = " ✅";
             textView.text = it + mark
             playerListView.addView(textView)
         }
@@ -108,25 +108,31 @@ class GetPlayersRequestFactory(
     fun create(): StringRequest {
         return requestFactory.create(
             Request.Method.GET,
-            "http://10.0.2.2:8090/listParticipantsWho?quizId=" + quizId + "&&hasSubmittedQuestion=" + answeredQuestion,
+            "http://10.0.2.2:8090/listParticipantsWho?quizId=" + quizId + "&&waiting=" + waiting,
             getListener(),
             errorListener
         )
     }
 }
 
+
+
 class WaitingForPlayersActivity : AppCompatActivity {
 
     var poller: Poller? = null
     val requestFactory: StringRequestFactory
-    constructor(poller: Poller, requestFactory: StringRequestFactory){
+    private var intentFactory: IntentFactory
+
+    constructor(poller: Poller, requestFactory: StringRequestFactory, intentFactory: IntentFactory){
         this.poller = poller
         this.requestFactory = requestFactory
+        this.intentFactory = intentFactory
     }
 
     constructor(){
         //poller = Poller(this)
         requestFactory = StringRequestFactory()
+        intentFactory = IntentFactory()
     }
 
     fun startQuiz(view: View) {
@@ -150,16 +156,29 @@ class WaitingForPlayersActivity : AppCompatActivity {
         }
     }
 
-    private fun getHasStartedRequestListener(poller: Poller, quizId: String): Response.Listener<String> {
+    private fun getCurrentStage (): Int {
+        val stage = intent.extras?.get("STAGE")
+        if (stage is Int) {
+            return stage
+        }
+        return -1
+    }
+
+    fun getHasStartedRequestListener(): Response.Listener<String> {
         return  Response.Listener<String> { response ->
-            Log.wtf("has started", response)
-            if (response == "true") {
-                poller.stop()
-                val intent = Intent(this, QuestionActivity::class.java)
-                intent.putExtra("QUIZ_ID", quizId.toString())
+//            Log.wtf("has started", response)
+            val currentStage = getCurrentStage()
+            val respondingStage: Int = response.toInt()
+
+            if (currentStage < respondingStage) {
+                poller?.stop()
+                val newIntent = intentFactory.create(this, QuestionActivity::class.java)
+
+                val quizId = intent.extras?.get("QUIZ_ID").toString()
+                newIntent.putExtra("QUIZ_ID", quizId)
 //                intent.putExtra("PLAYER_NAME", intent.extras.get("PLAYER_NAME") as String)
 //                intent.putExtra("HOST", intent.extras.get("HOST") as Boolean)
-                startActivity(intent)
+                startActivity(newIntent)
             }
 
         }
@@ -184,8 +203,8 @@ class WaitingForPlayersActivity : AppCompatActivity {
 
         val hasStarted = requestFactory.create(
             Request.Method.GET,
-            "http://10.0.2.2:8090/hasStarted?quizId=" +quizId,
-            getHasStartedRequestListener(poller!!, quizId.toString()),
+            "http://10.0.2.2:8090/stage?quizId=" +quizId,
+            getHasStartedRequestListener(),
             defaultErrorListener)
 
         val requests = listOf(getPlayersWithoutQuestions, getPlayersWithQuestions, hasStarted)
