@@ -37,6 +37,7 @@ open class JoinActivity (
             val intent = intentFactory.create(this, SubmitQuestionActivity::class.java)
             intent.putExtra("QUIZ_ID", quizId);
             intent.putExtra("PLAYER_NAME", name);
+            intent.putExtra("STAGE", -1);
             startActivity(intent)
         }
     }

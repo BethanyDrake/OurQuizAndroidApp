@@ -1,12 +1,12 @@
 package com.sycorax.ourquiz
 
 import android.content.Intent
+import android.widget.RadioGroup
 import android.widget.TextView
 import com.beust.klaxon.Klaxon
 import io.mockk.*
 import org.junit.Assert
 import org.junit.Test
-import java.lang.Exception
 
 class QuestionActivityTest {
     @Test
@@ -88,38 +88,47 @@ class QuestionActivityTest {
     }
 
     @Test
-    fun `on select -- submits answer`() {
+    fun `on select -- submits your answer`() {
 
         val mSubmitAnswerService = mockk<SubmitAnswerService>(relaxed = true)
 
         val activity = spyk(QuestionActivity(mockk(relaxed = true), mockk(relaxed=true), mockk(relaxed=true), mSubmitAnswerService))
-        every { activity.intent } returns mockk(relaxed = true)
+        val mIntent = createMockIntentWithExtras(mapOf(Pair("QUIZ_ID", "quiz-id"), Pair("PLAYER_NAME", "my name"), Pair("STAGE", 0)))
+
+        every { activity.intent } returns mIntent
+
+        val mRadioGroup = mockk<RadioGroup>()
+        every {mRadioGroup.checkedRadioButtonId} returns R.id.B
+        every {activity.findViewById<RadioGroup>(R.id.radioGroup)} returns mRadioGroup;
+
+
         every { activity.startActivity(any()) } returns Unit
 
         activity.onSelectAnswer(mockk())
-        verify { mSubmitAnswerService.submitAnswer() }
+        val body = SubmitAnswerBody("quiz-id", "my name", 0,1)
+        verify { mSubmitAnswerService.submitAnswer(activity, any(), body) }
     }
 
+//    @Test
+//    fun `on select -- when submitting answer fails -- doesnt open the next activity`() {
+//
+//        val mSubmitAnswerService = mockk<SubmitAnswerService>(relaxed = true)
+//
+//        every { mSubmitAnswerService.submitAnswer() } throws Exception()
+//        val activity = spyk(QuestionActivity(
+//            mockk(relaxed=true),
+//            mockk(relaxed=true),
+//            mockk(relaxed=true),
+//            mSubmitAnswerService, mockk(relaxed=true)))
+//        every { activity.intent } returns mockk(relaxed = true)
+//        every { activity.startActivity(any()) } returns Unit
+//
+//        activity.onSelectAnswer(mockk())
+//        verify (exactly = 0){ activity.startActivity(any())}
+//    }
+
     @Test
-    fun `on select -- when submitting answer fails -- doesnt open the next activity`() {
-
-        val mSubmitAnswerService = mockk<SubmitAnswerService>(relaxed = true)
-
-        every { mSubmitAnswerService.submitAnswer() } throws Exception()
-        val activity = spyk(QuestionActivity(
-            mockk(relaxed=true),
-            mockk(relaxed=true),
-            mockk(relaxed=true),
-            mSubmitAnswerService, mockk(relaxed=true)))
-        every { activity.intent } returns mockk(relaxed = true)
-        every { activity.startActivity(any()) } returns Unit
-
-        activity.onSelectAnswer(mockk())
-        verify (exactly = 0){ activity.startActivity(any())}
-    }
-
-    @Test
-    fun `on select -- opens waiting screen -- with extras`() {
+    fun `on finished submitting answer -- opens waiting screen -- with extras`() {
         val mIntentFactory = mockk<IntentFactory>()
         val mIntent = mockk<Intent>(relaxed = true)
 
@@ -128,7 +137,7 @@ class QuestionActivityTest {
         every { activity.intent } returns mockk(relaxed = true)
         every { activity.startActivity(any()) } returns Unit
 
-        activity.onSelectAnswer(mockk())
+        activity.getOnFinishedSubmittingAnswer()()
         verify { activity.startActivity(mIntent) }
     }
 }

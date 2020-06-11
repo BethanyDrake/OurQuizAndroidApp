@@ -91,6 +91,7 @@ class JoinActivityTest {
 
         verify {startedActivityWithIntent.captured.putExtra("QUIZ_ID", "a-quiz-id")}
         verify {startedActivityWithIntent.captured.putExtra("PLAYER_NAME", "my-name")}
+        verify {startedActivityWithIntent.captured.putExtra("STAGE", -1)}
     }
 
 }

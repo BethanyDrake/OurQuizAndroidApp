@@ -42,7 +42,7 @@ class WaitingForPlayersActivityTest {
 
         val mIntentFactory = mockk<IntentFactory>(relaxed = true)
         val activity = spyk(WaitingForPlayersActivity(mPoller, mockk(relaxed = true), mIntentFactory))
-        val extras = mapOf(Pair("STAGE", -1), Pair("QUIZ_ID", "whatever"),  Pair("HOST", false))
+        val extras = mapOf(Pair("STAGE", -1), Pair("QUIZ_ID", "whatever"),  Pair("HOST", false), Pair("PLAYER_NAME", "my name"))
         val mIntent = createMockIntentWithExtras(extras)
         every { activity.intent } returns mIntent
         every { activity.startActivity(any()) } returns Unit

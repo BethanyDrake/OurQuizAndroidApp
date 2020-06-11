@@ -2,15 +2,12 @@ package com.sycorax.ourquiz
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.content.ContextCompat.startActivity
 import android.util.Log
 import android.view.View
-import android.widget.EditText
+import android.widget.RadioGroup
 import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.beust.klaxon.Klaxon
 
 class QuestionActivity(
@@ -34,6 +31,16 @@ class QuestionActivity(
         }
     }
 
+    fun getOnFinishedSubmittingAnswer(): ()->Unit{
+        return {
+
+            val intent = intentFactory.create(this, WaitingForPlayersActivity::class.java)
+            intent.putExtra("QUIZ_ID", getQuizId())
+            intent.putExtra("STAGE", 0)
+
+            startActivity(intent)
+        }
+    }
 
     private fun getQuestion(quizId:String){
         //Log.wtf("bbb", "gettingt question" )
@@ -60,24 +67,38 @@ class QuestionActivity(
 
      }
 
-    fun getQuizId() : String {
+    private fun getQuizId() : String {
         return intent.extras.get("QUIZ_ID").toString()
     }
 
+    private fun getPlayerName() : String {
+        return intent.extras.get("PLAYER_NAME").toString()
+    }
+//    fun getQuestionNumber():Int {
+//        val stageExtra = intent.extras.get("STAGE")
+//        if (stageExtra is Int && stageExtra >= 0) {
+//            return stageExtra
+//        }
+//        throw Exception("Expected extra: STAGE: Int, with value >= 0 . Instead found: $stageExtra")
+//    }
+
+    private fun getSelectedAnswer() : Int {
+        val radioButtonIds = listOf(R.id.A, R.id.B, R.id.C, R.id.D)
+        val radioGroup: RadioGroup = findViewById(R.id.radioGroup)
+
+        return radioButtonIds.indexOf(radioGroup.checkedRadioButtonId)
+    }
+
     fun onSelectAnswer(view: View) {
+        val body = SubmitAnswerBody(getQuizId(), getPlayerName(), 0,getSelectedAnswer())
 
         try{
-            submitAnswerService.submitAnswer()
+            submitAnswerService.submitAnswer(this, getOnFinishedSubmittingAnswer(),body)
         }catch (e:Exception){
             logger.d("io", "failed to submit answer")
             return
         }
 
-        val intent = intentFactory.create(this, WaitingForPlayersActivity::class.java)
-        intent.putExtra("QUIZ_ID", getQuizId())
-        intent.putExtra("STAGE", 0)
-
-        startActivity(intent)
     }
 
     fun innerOnCreate() {

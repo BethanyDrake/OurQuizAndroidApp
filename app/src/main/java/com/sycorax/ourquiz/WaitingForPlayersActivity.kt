@@ -31,7 +31,6 @@ class Poller(context: Context) {
 
     private val queue: RequestQueue
     init {
-        Log.wtf("bbbbb", "" + context)
         queue =  Volley.newRequestQueue(context)
     }
 
@@ -181,7 +180,7 @@ class WaitingForPlayersActivity : AppCompatActivity {
     }
 
     fun getHasStartedRequestListener(): Response.Listener<String> {
-        Log.wtf("bbb", "gettingHasStartedListener for stage: " + getCurrentStage() )
+       // Log.wtf("bbb", "gettingHasStartedListener for stage: " + getCurrentStage() )
 
         return  Response.Listener<String> { response ->
 //            Log.wtf("has started", response)
@@ -201,7 +200,7 @@ class WaitingForPlayersActivity : AppCompatActivity {
                 } else {
                     val newIntent = intentFactory.create(this, QuestionActivity::class.java)
                     newIntent.putExtra("QUIZ_ID", getQuizId())
-                    intent.putExtra("PLAYER_NAME", getPlayerName())
+                    newIntent.putExtra("PLAYER_NAME", getPlayerName())
 //                intent.putExtra("HOST", intent.extras.get("HOST") as Boolean)
                     startActivity(newIntent)
                 }
