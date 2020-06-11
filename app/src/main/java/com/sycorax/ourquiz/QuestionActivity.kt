@@ -2,6 +2,7 @@ package com.sycorax.ourquiz
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.content.ContextCompat.startActivity
 import android.util.Log
 import android.view.View
 import android.widget.EditText
@@ -15,7 +16,9 @@ import com.beust.klaxon.Klaxon
 class QuestionActivity(
     val requestFactory: StringRequestFactory = StringRequestFactory(),
     val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory(),
-    val intentFactory: IntentFactory = IntentFactory()
+    val intentFactory: IntentFactory = IntentFactory(),
+    val submitAnswerService: SubmitAnswerService = SubmitAnswerService(),
+    val logger:Logger = Logger()
 ) : AppCompatActivity() {
 
 
@@ -62,9 +65,18 @@ class QuestionActivity(
     }
 
     fun onSelectAnswer(view: View) {
+
+        try{
+            submitAnswerService.submitAnswer()
+        }catch (e:Exception){
+            logger.d("io", "failed to submit answer")
+            return
+        }
+
         val intent = intentFactory.create(this, WaitingForPlayersActivity::class.java)
         intent.putExtra("QUIZ_ID", getQuizId())
         intent.putExtra("STAGE", 0)
+
         startActivity(intent)
     }
 

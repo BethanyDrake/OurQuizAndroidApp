@@ -6,6 +6,7 @@ import com.beust.klaxon.Klaxon
 import io.mockk.*
 import org.junit.Assert
 import org.junit.Test
+import java.lang.Exception
 
 class QuestionActivityTest {
     @Test
@@ -87,13 +88,44 @@ class QuestionActivityTest {
     }
 
     @Test
+    fun `on select -- submits answer`() {
+
+        val mSubmitAnswerService = mockk<SubmitAnswerService>(relaxed = true)
+
+        val activity = spyk(QuestionActivity(mockk(relaxed = true), mockk(relaxed=true), mockk(relaxed=true), mSubmitAnswerService))
+        every { activity.intent } returns mockk(relaxed = true)
+        every { activity.startActivity(any()) } returns Unit
+
+        activity.onSelectAnswer(mockk())
+        verify { mSubmitAnswerService.submitAnswer() }
+    }
+
+    @Test
+    fun `on select -- when submitting answer fails -- doesnt open the next activity`() {
+
+        val mSubmitAnswerService = mockk<SubmitAnswerService>(relaxed = true)
+
+        every { mSubmitAnswerService.submitAnswer() } throws Exception()
+        val activity = spyk(QuestionActivity(
+            mockk(relaxed=true),
+            mockk(relaxed=true),
+            mockk(relaxed=true),
+            mSubmitAnswerService, mockk(relaxed=true)))
+        every { activity.intent } returns mockk(relaxed = true)
+        every { activity.startActivity(any()) } returns Unit
+
+        activity.onSelectAnswer(mockk())
+        verify (exactly = 0){ activity.startActivity(any())}
+    }
+
+    @Test
     fun `on select -- opens waiting screen -- with extras`() {
         val mIntentFactory = mockk<IntentFactory>()
         val mIntent = mockk<Intent>(relaxed = true)
 
         every {  mIntentFactory.create(any(), WaitingForPlayersActivity::class.java) } returns mIntent
-        val activity = spyk(QuestionActivity(mockk(relaxed = true), mockk(relaxed=true), mIntentFactory))
-
+        val activity = spyk(QuestionActivity(mockk(relaxed = true), mockk(relaxed=true), mIntentFactory, mockk(relaxed = true), mockk(relaxed = true)))
+        every { activity.intent } returns mockk(relaxed = true)
         every { activity.startActivity(any()) } returns Unit
 
         activity.onSelectAnswer(mockk())

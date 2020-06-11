@@ -2,6 +2,7 @@ package com.sycorax.ourquiz
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -15,6 +16,12 @@ class IntentFactory {
 class VolleyRequestQueueFactory {
     fun create(context: Context): RequestQueue {
         return Volley.newRequestQueue(context)
+    }
+}
+
+class Logger {
+    fun d(tag: String, message: String): Int {
+        return Log.d(tag, message)
     }
 }
 

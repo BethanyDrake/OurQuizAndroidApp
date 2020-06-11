@@ -47,7 +47,7 @@ class Poller(context: Context) {
     private fun onRequestComplete(){
 
         pendingRequests-=1
-        Log.wtf("aaa", "pendingRequests: "+ pendingRequests)
+        //Log.wtf("aaa", "pendingRequests: "+ pendingRequests)
         if (pendingRequests <=0){
             waitAndThenDo()
         }
@@ -148,8 +148,12 @@ class WaitingForPlayersActivity : AppCompatActivity {
 
     }
 
+    private fun amHost(): Boolean {
+       return intent.extras.get("HOST") == true
+    }
+
     private fun addHostFragment(){
-        if (intent.extras.get("HOST") == true) {
+        if (amHost()) {
             supportFragmentManager.beginTransaction()
                 .add(R.id.hostSectionFragmentContainer, WaitingForPlayersHostSection.newInstance())
                 .commit()
@@ -164,7 +168,21 @@ class WaitingForPlayersActivity : AppCompatActivity {
         return -1
     }
 
+    private fun getQuizId (): String {
+        return intent.extras?.get("QUIZ_ID").toString()
+    }
+    private fun getPlayerName () : String {
+        val playerName = intent.extras.get("PLAYER_NAME")
+        if (playerName is String) {
+            return playerName
+        }
+        Log.e("extra error", "playerName: " +(playerName) )
+        return ""
+    }
+
     fun getHasStartedRequestListener(): Response.Listener<String> {
+        Log.wtf("bbb", "gettingHasStartedListener for stage: " + getCurrentStage() )
+
         return  Response.Listener<String> { response ->
 //            Log.wtf("has started", response)
             val currentStage = getCurrentStage()
@@ -172,13 +190,23 @@ class WaitingForPlayersActivity : AppCompatActivity {
 
             if (currentStage < respondingStage) {
                 poller?.stop()
-                val newIntent = intentFactory.create(this, QuestionActivity::class.java)
 
-                val quizId = intent.extras?.get("QUIZ_ID").toString()
-                newIntent.putExtra("QUIZ_ID", quizId)
-//                intent.putExtra("PLAYER_NAME", intent.extras.get("PLAYER_NAME") as String)
+                if (amHost() ){
+                    val newIntent = intentFactory.create(this, WaitingForPlayersActivity::class.java)
+                    newIntent.putExtra("QUIZ_ID", getQuizId ())
+                    newIntent.putExtra("STAGE", getCurrentStage()+1)
+                    newIntent.putExtra("HOST", true)
+                    startActivity(newIntent)
+
+                } else {
+                    val newIntent = intentFactory.create(this, QuestionActivity::class.java)
+                    newIntent.putExtra("QUIZ_ID", getQuizId())
+                    intent.putExtra("PLAYER_NAME", getPlayerName())
 //                intent.putExtra("HOST", intent.extras.get("HOST") as Boolean)
-                startActivity(newIntent)
+                    startActivity(newIntent)
+                }
+
+
             }
 
         }
