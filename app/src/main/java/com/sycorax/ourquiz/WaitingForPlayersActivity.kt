@@ -56,10 +56,16 @@ class Poller(context: Context) {
         onRequestComplete()
     }
 
+
+    fun resume() {
+        waitAndThenDo()
+        queue.addRequestFinishedListener(requestFinishedListener)
+
+    }
+
     fun start(requests: List<StringRequest>) {
         this.requests = requests
         waitAndThenDo()
-        queue.addRequestFinishedListener(requestFinishedListener)
     }
 
     fun stop() {
@@ -81,6 +87,8 @@ class GetPlayersRequestFactory(
     val waiting: Boolean,
     val quizId: String
 ) {
+
+
     private fun displayPlayers(nameList: List<String>) {
         //val playerListView = context.findViewById<LinearLayout>(R.id.playerList)
         playerListView.removeAllViews()
@@ -128,10 +136,26 @@ class WaitingForPlayersActivity : AppCompatActivity {
         this.intentFactory = intentFactory
     }
 
+
     constructor(){
         //poller = Poller(this)
         requestFactory = StringRequestFactory()
         intentFactory = IntentFactory()
+    }
+
+    override fun onPostResume() {
+        super.onPostResume()
+        poller?.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        poller?.stop()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        poller?.stop()
     }
 
     fun startQuiz(view: View) {
