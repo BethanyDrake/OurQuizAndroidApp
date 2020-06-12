@@ -1,76 +1,17 @@
-package com.sycorax.ourquiz
+package com.sycorax.ourquiz.WaitingForPlayers
 
-import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.TextView
 import com.android.volley.Request
-import com.android.volley.RequestQueue
-import com.android.volley.RequestQueue.RequestFinishedListener
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-
-class Poller(context: Context) {
-    /*
-        On start it adds all the requests.
-        Once all the request are complete, it waits a little while, then re-adds them.
-
-        On stop it no longer re-adds the requests after they are completed.
-     */
-
-    private var pendingRequests = 0
-    private var requests: List<StringRequest> = listOf()
-
-    private val queue: RequestQueue
-    init {
-        queue =  Volley.newRequestQueue(context)
-    }
-
-    private fun waitAndThenDo () {
-        pendingRequests = requests.count()
-        Handler().postDelayed(
-            {
-                requests.forEach {queue.add(it)}
-            }, 1000)
-
-    }
-
-    private fun onRequestComplete(){
-
-        pendingRequests-=1
-        //Log.wtf("aaa", "pendingRequests: "+ pendingRequests)
-        if (pendingRequests <=0){
-            waitAndThenDo()
-        }
-    }
-
-    private val requestFinishedListener: RequestFinishedListener<Any> = RequestFinishedListener {
-        onRequestComplete()
-    }
-
-
-    fun resume() {
-        waitAndThenDo()
-        queue.addRequestFinishedListener(requestFinishedListener)
-
-    }
-
-    fun start(requests: List<StringRequest>) {
-        this.requests = requests
-        waitAndThenDo()
-    }
-
-    fun stop() {
-        queue.removeRequestFinishedListener(requestFinishedListener)
-    }
-}
+import com.sycorax.ourquiz.*
 
 fun parseList(stringList: String): List<String> {
     if (stringList == "null" || stringList.length <= 2) {
@@ -78,50 +19,6 @@ fun parseList(stringList: String): List<String> {
     }
     return stringList.subSequence(1,stringList.lastIndex).split(", ");
 }
-
-class GetPlayersRequestFactory(
-    val requestFactory: StringRequestFactory,
-    val context: Context,
-    val playerListView: LinearLayout,
-    val waiting: Boolean,
-    val quizId: String
-) {
-
-
-    private fun displayPlayers(nameList: List<String>) {
-        //val playerListView = context.findViewById<LinearLayout>(R.id.playerList)
-        playerListView.removeAllViews()
-        nameList.forEach {
-            val textView = TextView(context)
-            var mark = ""
-            if (!waiting) mark = " ✅";
-            textView.text = it + mark
-            playerListView.addView(textView)
-        }
-    }
-
-    private fun getListener(): Response.Listener<String> {
-        return Response.Listener<String> { response ->
-            //Log.wtf("playersWithoutQuestions", response)
-            displayPlayers(parseList(response))
-        }
-
-    }
-
-    val errorListener = Response.ErrorListener { Log.wtf("error", "a") }
-
-
-    fun create(): StringRequest {
-        return requestFactory.create(
-            Request.Method.GET,
-            "http://10.0.2.2:8090/listParticipantsWho?quizId=" + quizId + "&&waiting=" + waiting,
-            getListener(),
-            errorListener
-        )
-    }
-}
-
-
 
 class WaitingForPlayersActivity : AppCompatActivity {
 
@@ -134,7 +31,6 @@ class WaitingForPlayersActivity : AppCompatActivity {
         this.requestFactory = requestFactory
         this.intentFactory = intentFactory
     }
-
 
     constructor(){
         //poller = Poller(this)
@@ -246,9 +142,7 @@ class WaitingForPlayersActivity : AppCompatActivity {
                     startActivity(newIntent)
                 }
 
-
             }
-
         }
     }
 
@@ -262,11 +156,13 @@ class WaitingForPlayersActivity : AppCompatActivity {
 
         val playerListView = findViewById<LinearLayout>(R.id.playerList)
         val getPlayersWithoutQuestions = GetPlayersRequestFactory(
-            requestFactory, this, playerListView, false, quizId.toString()).create()
+            requestFactory, this, playerListView, false, quizId.toString()
+        ).create()
 
         val playersWithQuestionListView = findViewById<LinearLayout>(R.id.playersWithQuestionList)
         val getPlayersWithQuestions =  GetPlayersRequestFactory(
-            requestFactory, this, playersWithQuestionListView, true, quizId.toString()).create()
+            requestFactory, this, playersWithQuestionListView, true, quizId.toString()
+        ).create()
 
 
         val hasStarted = requestFactory.create(

@@ -36,7 +36,7 @@
                     android:value="com.sycorax.ourquiz.MainActivity"/>
         </activity>
         <activity
-                android:name=".WaitingForPlayersActivity"
+                android:name=".WaitingForPlayers.WaitingForPlayersActivity"
                 android:label="Waiting For Players">
         </activity>
         <activity

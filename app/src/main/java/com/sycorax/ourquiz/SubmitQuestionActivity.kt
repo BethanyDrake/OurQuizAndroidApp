@@ -1,6 +1,5 @@
 package com.sycorax.ourquiz
 
-import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,9 +9,8 @@ import android.widget.RadioGroup
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.beust.klaxon.Klaxon
-import com.sycorax.ourquiz.R.id.questionText
+import com.sycorax.ourquiz.WaitingForPlayers.WaitingForPlayersActivity
 
 class RequestWithBody(val body:String, method:Int, url: String, responseListener: Response.Listener<String>,  errorListener: Response.ErrorListener )
     : StringRequest(method, url, responseListener, errorListener) {

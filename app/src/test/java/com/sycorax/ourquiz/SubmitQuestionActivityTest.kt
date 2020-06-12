@@ -1,15 +1,12 @@
 package com.sycorax.ourquiz
 
 import android.content.Intent
-import android.os.Bundle
-import android.text.Editable
 import android.view.View
 import android.widget.EditText
-import android.widget.RadioButton
 import android.widget.RadioGroup
 import com.beust.klaxon.Klaxon
+import com.sycorax.ourquiz.WaitingForPlayers.WaitingForPlayersActivity
 import io.mockk.*
-import io.mockk.MockKSettings.relaxed
 import org.junit.Assert
 import org.junit.Test
 

@@ -2,6 +2,8 @@ package com.sycorax.ourquiz
 
 import android.content.Intent
 import android.widget.LinearLayout
+import com.sycorax.ourquiz.WaitingForPlayers.Poller
+import com.sycorax.ourquiz.WaitingForPlayers.WaitingForPlayersActivity
 import io.mockk.*
 import org.junit.Test
 
@@ -10,7 +12,13 @@ class WaitingForPlayersActivityTest {
     @Test
     fun `starts polling`() {
 
-        val activity = spyk(WaitingForPlayersActivity(mockk(relaxed = true), mockk(relaxed = true), mockk(relaxed = true)))
+        val activity = spyk(
+            WaitingForPlayersActivity(
+                mockk(relaxed = true),
+                mockk(relaxed = true),
+                mockk(relaxed = true)
+            )
+        )
         every { activity.intent } returns mockk(relaxed = true)
         every { activity.findViewById<LinearLayout>(any()) } returns mockk(relaxed = true)
         activity.innerOnCreate()
@@ -20,8 +28,14 @@ class WaitingForPlayersActivityTest {
     @Test
     fun `doesnt stop while when api returns a stage equal to yours`() {
 
-        val mPoller:Poller = mockk(relaxed = true)
-        val activity = spyk(WaitingForPlayersActivity(mPoller, mockk(relaxed = true), mockk(relaxed = true)))
+        val mPoller: Poller = mockk(relaxed = true)
+        val activity = spyk(
+            WaitingForPlayersActivity(
+                mPoller,
+                mockk(relaxed = true),
+                mockk(relaxed = true)
+            )
+        )
 
         val extras = mapOf(Pair("STAGE", -1))
 
@@ -38,10 +52,16 @@ class WaitingForPlayersActivityTest {
     @Test
     fun `stops and opens next activity when api returns a stage later than yours -- opens question screen`() {
 
-        val mPoller:Poller = mockk(relaxed = true)
+        val mPoller: Poller = mockk(relaxed = true)
 
         val mIntentFactory = mockk<IntentFactory>(relaxed = true)
-        val activity = spyk(WaitingForPlayersActivity(mPoller, mockk(relaxed = true), mIntentFactory))
+        val activity = spyk(
+            WaitingForPlayersActivity(
+                mPoller,
+                mockk(relaxed = true),
+                mIntentFactory
+            )
+        )
         val extras = mapOf(Pair("STAGE", -1), Pair("QUIZ_ID", "whatever"),  Pair("HOST", false), Pair("PLAYER_NAME", "my name"))
         val mIntent = createMockIntentWithExtras(extras)
         every { activity.intent } returns mIntent
@@ -59,11 +79,17 @@ class WaitingForPlayersActivityTest {
     @Test
     fun `when I am host -- and stage returned is later than mine -- reopen waiting screen as next stage`() {
 
-        val mPoller:Poller = mockk(relaxed = true)
+        val mPoller: Poller = mockk(relaxed = true)
         val mIntentFactory = mockk<IntentFactory>(relaxed = true)
         val mCreatedIntend : Intent = mockk(relaxed = true)
         every {  mIntentFactory.create(any(), WaitingForPlayersActivity::class.java) } returns mCreatedIntend;
-        val activity = spyk(WaitingForPlayersActivity(mPoller, mockk(relaxed = true), mIntentFactory))
+        val activity = spyk(
+            WaitingForPlayersActivity(
+                mPoller,
+                mockk(relaxed = true),
+                mIntentFactory
+            )
+        )
         val extras = mapOf(Pair("STAGE", -1), Pair("QUIZ_ID", "whatever"), Pair("HOST", true))
         val mIntent = createMockIntentWithExtras(extras)
         every { activity.intent } returns mIntent

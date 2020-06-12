@@ -4,6 +4,7 @@ import android.content.Intent
 import android.widget.RadioGroup
 import android.widget.TextView
 import com.beust.klaxon.Klaxon
+import com.sycorax.ourquiz.WaitingForPlayers.WaitingForPlayersActivity
 import io.mockk.*
 import org.junit.Assert
 import org.junit.Test
