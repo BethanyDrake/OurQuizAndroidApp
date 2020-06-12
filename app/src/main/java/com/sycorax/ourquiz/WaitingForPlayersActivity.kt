@@ -1,13 +1,13 @@
 package com.sycorax.ourquiz
 
 import android.content.Context
-import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.content.ContextCompat.startActivity
 import android.util.Log
 import android.view.View
+import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.android.volley.Request
@@ -16,7 +16,6 @@ import com.android.volley.RequestQueue.RequestFinishedListener
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import org.w3c.dom.Text
 
 class Poller(context: Context) {
     /*
@@ -168,18 +167,36 @@ class WaitingForPlayersActivity : AppCompatActivity {
             },
             Response.ErrorListener { Log.wtf("error", "a" )})
         queue.add(stringRequest)
+    }
 
+    fun revealAnswer(view: View) {
+        Log.wtf("button press", "revealed answer")
     }
 
     private fun amHost(): Boolean {
        return intent.extras.get("HOST") == true
     }
 
-    private fun addHostFragment(){
+    private fun setVisibleButton(){
+        val stage = getCurrentStage()
+        Log.wtf("updating", "setting visible button for stage: " + stage)
+        val startQuizButton = findViewById<Button>(R.id.startQuizButton)
+        val revealAnswerButton = findViewById<Button>(R.id.revealAnswerButton)
+
+        startQuizButton?.visibility = View.GONE
+        revealAnswerButton?.visibility = View.GONE
+
+        if (stage == -1) startQuizButton?.visibility = View.VISIBLE
+        if (stage >= 0) revealAnswerButton?.visibility = View.VISIBLE
+    }
+
+    private fun addHostSection(){
         if (amHost()) {
-            supportFragmentManager.beginTransaction()
-                .add(R.id.hostSectionFragmentContainer, WaitingForPlayersHostSection.newInstance())
-                .commit()
+            Log.wtf("updating", "adding host section")
+            val hostSection = findViewById<FrameLayout>(R.id.hostSection)
+            hostSection.visibility = View.VISIBLE
+            setVisibleButton()
+
         }
     }
 
@@ -238,7 +255,7 @@ class WaitingForPlayersActivity : AppCompatActivity {
     val defaultErrorListener = Response.ErrorListener { Log.wtf("error", "a" )}
 
     fun innerOnCreate() {
-        addHostFragment()
+        addHostSection()
         if (poller == null) poller = Poller(this)
 
         val quizId  = intent.extras.get("QUIZ_ID")

@@ -22,11 +22,26 @@
             app:layout_constraintTop_toBottomOf="@+id/playersWithQuestionList" app:layout_constraintStart_toStartOf="parent">
     </LinearLayout>
     <FrameLayout
-            android:id="@+id/hostSectionFragmentContainer"
+            android:id="@+id/hostSection"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+    >
+        <Button
+                android:text="Start Quiz"
+                android:onClick="startQuiz"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/startQuizButton"/>
+
+        <Button
+                android:text="Reveal Answer"
+                android:onClick="revealAnswer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/revealAnswerButton"/>
     </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>
