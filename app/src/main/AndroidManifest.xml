@@ -45,6 +45,8 @@
         </activity>
         <activity android:name=".QuestionActivity">
         </activity>
+        <activity android:name=".RevealAnswerActivity">
+        </activity>
     </application>
 
 </manifest>

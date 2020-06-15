@@ -67,6 +67,8 @@ class WaitingForPlayersActivity : AppCompatActivity {
 
     fun revealAnswer(view: View) {
         Log.wtf("button press", "revealed answer")
+        val newIntent = intentFactory.create(this, RevealAnswerActivity::class.java)
+        startActivity(newIntent)
     }
 
     private fun amHost(): Boolean {
