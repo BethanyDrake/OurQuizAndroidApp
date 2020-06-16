@@ -2,7 +2,10 @@ package com.sycorax.ourquiz
 
 import android.content.Intent
 import android.widget.LinearLayout
+import com.android.volley.Request
+import com.beust.klaxon.Klaxon
 import com.sycorax.ourquiz.WaitingForPlayers.Poller
+import com.sycorax.ourquiz.WaitingForPlayers.StatusResponse
 import com.sycorax.ourquiz.WaitingForPlayers.WaitingForPlayersActivity
 import io.mockk.*
 import org.junit.Test
@@ -42,10 +45,40 @@ class WaitingForPlayersActivityTest {
         val mIntent = createMockIntentWithExtras(extras)
         every { activity.intent } returns mIntent
         every { activity.findViewById<LinearLayout>(any()) } returns mockk(relaxed = true)
-        activity.getHasStartedRequestListener().onResponse("-1")
+        val notStartedResponse = Klaxon().toJsonString(StatusResponse(-1, false))
+        activity.getHasStartedRequestListener().onResponse(notStartedResponse)
 
         verify { mPoller wasNot Called }
 
+    }
+
+    @Test
+    fun `stops and reveals the answer when question is revealed`() {
+
+        val mPoller: Poller = mockk(relaxed = true)
+
+        val mIntentFactory = mockk<IntentFactory>(relaxed = true)
+        val activity = spyk(
+            WaitingForPlayersActivity(
+                mPoller,
+                mockk(relaxed = true),
+                mIntentFactory
+            )
+        )
+        val extras = mapOf(Pair("STAGE", 0), Pair("QUIZ_ID", "whatever"),  Pair("HOST", false), Pair("PLAYER_NAME", "my name"))
+        val mIntent = createMockIntentWithExtras(extras)
+        every { activity.intent } returns mIntent
+        every { activity.startActivity(any()) } returns Unit
+        every { activity.findViewById<LinearLayout>(any()) } returns mockk(relaxed = true)
+
+
+        val justStartedResponse = Klaxon().toJsonString(StatusResponse(0, true))
+        activity.getHasStartedRequestListener().onResponse(justStartedResponse)
+
+        verify { mPoller.stop() }
+        verify { activity.startActivity(any()) }
+
+        verify { mIntentFactory.create(any(), RevealAnswerActivity::class.java) }
     }
 
 
@@ -68,12 +101,36 @@ class WaitingForPlayersActivityTest {
         every { activity.startActivity(any()) } returns Unit
         every { activity.findViewById<LinearLayout>(any()) } returns mockk(relaxed = true)
 
-        activity.getHasStartedRequestListener().onResponse("0")
+
+        val justStartedResponse = Klaxon().toJsonString(StatusResponse(0, false))
+        activity.getHasStartedRequestListener().onResponse(justStartedResponse)
 
         verify { mPoller.stop() }
         verify { activity.startActivity(any()) }
 
         verify { mIntentFactory.create(any(), QuestionActivity::class.java) }
+    }
+
+    @Test
+    fun `reveal answer -- tells api to reveal the current questionanswer`(){
+        val mRequestFactory: StringRequestFactory = mockk(relaxed = true)
+        val activity = spyk(
+
+            WaitingForPlayersActivity(
+                mockk(relaxed = true),
+                mRequestFactory,
+                mockk(relaxed = true)
+            )
+        )
+        val extras = mapOf(Pair("STAGE", 0), Pair("QUIZ_ID", "a-quiz-id"),  Pair("HOST", false), Pair("PLAYER_NAME", "my name"))
+        val mIntent = createMockIntentWithExtras(extras)
+        every { activity.intent } returns mIntent
+        activity.revealAnswer(mockk())
+
+
+        verify { mRequestFactory.create(Request.Method.PUT, match { it.endsWith("revealQuestion?quizId=a-quiz-id&questionNumber=0") }, any(), any()) }
+
+
     }
 
     @Test
@@ -96,7 +153,8 @@ class WaitingForPlayersActivityTest {
         every { activity.startActivity(any()) } returns Unit
         every { activity.findViewById<LinearLayout>(any()) } returns mockk(relaxed = true)
 
-        activity.getHasStartedRequestListener().onResponse("0")
+        val nextQuestionResponse = Klaxon().toJsonString(StatusResponse(0, false))
+        activity.getHasStartedRequestListener().onResponse(nextQuestionResponse)
 
         verify { mPoller.stop() }
         verify { activity.startActivity(any()) }

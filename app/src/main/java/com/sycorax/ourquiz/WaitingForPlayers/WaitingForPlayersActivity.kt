@@ -8,10 +8,15 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.beust.klaxon.Klaxon
 import com.sycorax.ourquiz.*
+import java.util.*
+
+data class StatusResponse(val questionNumber: Int, val revealed: Boolean)
 
 fun parseList(stringList: String): List<String> {
     if (stringList == "null" || stringList.length <= 2) {
@@ -25,6 +30,7 @@ class WaitingForPlayersActivity : AppCompatActivity {
     var poller: Poller? = null
     val requestFactory: StringRequestFactory
     private var intentFactory: IntentFactory
+    var queue: RequestQueue? = null
 
     constructor(poller: Poller, requestFactory: StringRequestFactory, intentFactory: IntentFactory){
         this.poller = poller
@@ -66,9 +72,18 @@ class WaitingForPlayersActivity : AppCompatActivity {
     }
 
     fun revealAnswer(view: View) {
-        Log.wtf("button press", "revealed answer")
-        val newIntent = intentFactory.create(this, RevealAnswerActivity::class.java)
-        startActivity(newIntent)
+        //Log.wtf("button press", "revealed answer")
+        if (queue == null) {
+            queue = Volley.newRequestQueue(this)
+        }
+
+
+        val quizId = getQuizId()
+        val stage = getCurrentStage()
+
+        val url = "http://10.0.2.2:8090/revealQuestion?quizId=" +quizId + "&questionNumber=" + stage
+        val request = requestFactory.create(Request.Method.PUT, url, Response.Listener<String> {}, Response.ErrorListener {})
+        queue?.add(request)
     }
 
     private fun amHost(): Boolean {
@@ -124,7 +139,15 @@ class WaitingForPlayersActivity : AppCompatActivity {
         return  Response.Listener<String> { response ->
 //            Log.wtf("has started", response)
             val currentStage = getCurrentStage()
-            val respondingStage: Int = response.toInt()
+
+            val parsedReponse = Klaxon().parse<StatusResponse>(response) ?: StatusResponse(-1,false)
+            val respondingStage: Int = parsedReponse.questionNumber
+
+            if (currentStage == respondingStage && parsedReponse.revealed) {
+                poller?.stop()
+                val newIntent = intentFactory.create(this, RevealAnswerActivity::class.java)
+                startActivity(newIntent)
+            }
 
             if (currentStage < respondingStage) {
                 poller?.stop()
