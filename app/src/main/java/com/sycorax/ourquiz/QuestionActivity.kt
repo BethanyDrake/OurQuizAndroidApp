@@ -35,11 +35,12 @@ class QuestionActivity(
     fun getOnFinishedSubmittingAnswer(): ()->Unit{
         return {
 
-            val intent = intentFactory.create(this, WaitingForPlayersActivity::class.java)
-            intent.putExtra("QUIZ_ID", getQuizId())
-            intent.putExtra("STAGE", 0)
+            val newIntent = intentFactory.create(this, WaitingForPlayersActivity::class.java)
 
-            startActivity(intent)
+            copyExtrasFromIntent(intent, newIntent)
+            newIntent.putExtra("STAGE", 0)
+
+            startActivity(newIntent)
         }
     }
 
@@ -105,6 +106,8 @@ class QuestionActivity(
     fun innerOnCreate() {
         val quizId  = intent.extras.get("QUIZ_ID")
         getQuestion(quizId.toString())
+
+        Log.wtf("name", "QuestionActivty: " + getPlayerName(intent))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

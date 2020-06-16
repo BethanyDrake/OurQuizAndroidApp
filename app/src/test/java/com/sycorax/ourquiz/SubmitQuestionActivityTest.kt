@@ -138,7 +138,7 @@ class SubmitQuestionActivityTest {
 
 
         Assert.assertNotNull(parsedBody)
-        Assert.assertEquals(2, parsedBody?.question?.correctQuestionId)
+        Assert.assertEquals(2, parsedBody?.question?.correctAnswerId)
     }
 
     @Test

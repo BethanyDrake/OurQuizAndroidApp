@@ -43,6 +43,7 @@ open class SubmitQuestionActivity(
     }
 
     fun getRequestListener(): Response.Listener<String> {
+        Log.wtf("name", "JoinActivity: " + getPlayerName(intent))
         val requestListener = Response.Listener<String> { response ->
             if (response == "OK") {
                 val newIntent = intentFactory.create(this, WaitingForPlayersActivity::class.java)

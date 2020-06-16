@@ -7,4 +7,34 @@
         android:layout_height="match_parent"
         tools:context=".RevealAnswerActivity">
 
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="20dp">
+        <TextView
+                android:text="The correct answer was:"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"/>
+        <TextView
+                android:text=""
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/correctAnswer"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+        <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"/>
+        <TextView
+                android:text="Your answer:"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"/>
+        <TextView
+                android:text=""
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/yourAnswer"
+                app:layout_constraintTop_toTopOf="parent"/>
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

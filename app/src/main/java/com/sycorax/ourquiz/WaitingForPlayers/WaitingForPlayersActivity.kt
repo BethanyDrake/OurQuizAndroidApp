@@ -36,6 +36,8 @@ class WaitingForPlayersActivity : AppCompatActivity {
         this.poller = poller
         this.requestFactory = requestFactory
         this.intentFactory = intentFactory
+
+        Log.wtf("name", "WaitingForPlayersActivity: " + getPlayerName(intent))
     }
 
     constructor(){
@@ -146,6 +148,9 @@ class WaitingForPlayersActivity : AppCompatActivity {
             if (currentStage == respondingStage && parsedReponse.revealed) {
                 poller?.stop()
                 val newIntent = intentFactory.create(this, RevealAnswerActivity::class.java)
+                copyExtrasFromIntent(intent, newIntent)
+
+                Log.wtf("aaaa", "opening reveal answer activity")
                 startActivity(newIntent)
             }
 
@@ -205,5 +210,6 @@ class WaitingForPlayersActivity : AppCompatActivity {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_waiting_for_players)
         innerOnCreate()
+        Log.wtf("name", "WaitingForPlayerActivity: " + getPlayerName(intent))
     }
 }
