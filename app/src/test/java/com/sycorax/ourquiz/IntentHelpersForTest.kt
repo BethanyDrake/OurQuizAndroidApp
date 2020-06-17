@@ -7,7 +7,7 @@ import io.mockk.mockk
 
 fun createMockIntentWithExtras(extras: Map<String, Any>): Intent {
     val mIntent: Intent = mockk(relaxed = true)
-    val mExtras: Bundle = mockk()
+    val mExtras: Bundle = mockk(relaxed = true)
     extras.forEach{key, value ->
         every { mExtras.get(key) } returns value
     }

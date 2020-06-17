@@ -43,7 +43,6 @@ open class SubmitQuestionActivity(
     }
 
     fun getRequestListener(): Response.Listener<String> {
-        Log.wtf("name", "JoinActivity: " + getPlayerName(intent))
         val requestListener = Response.Listener<String> { response ->
             if (response == "OK") {
                 val newIntent = intentFactory.create(this, WaitingForPlayersActivity::class.java)
@@ -70,13 +69,8 @@ open class SubmitQuestionActivity(
 
 
     fun submit(view: View) {
-//        val radioGroup: RadioGroup = findViewById(R.id.radioGroup)
-//        val correctAnswerButtonId = radioGroup.checkedRadioButtonId
-
-//        val correctAnswer = radioButtonIds.indexOf(correctAnswerButtonId)
         val answerTexts: List<String> = listOf(R.id.TextA, R.id.TextB, R.id.TextC, R.id.TextD).map { (findViewById<EditText>(it)).text.toString()  }
         val questionText = findViewById<EditText>(R.id.questionText).text.toString()
-
 
         val quizId = intent.extras?.get("QUIZ_ID").toString();
         val playerName = intent.extras?.get("PLAYER_NAME").toString();
@@ -84,7 +78,6 @@ open class SubmitQuestionActivity(
         val url = "http://10.0.2.2:8090/submit"
 
         val queue = queueFactory.create(this)
-
 
         val question = Question(questionText, playerName, answerTexts, getCorrectAnswer())
         val submissionBody = QuestionSubmissionBody(quizId, question)

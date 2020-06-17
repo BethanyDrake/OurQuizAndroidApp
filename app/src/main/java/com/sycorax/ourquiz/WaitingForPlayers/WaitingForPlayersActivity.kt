@@ -1,6 +1,7 @@
 package com.sycorax.ourquiz.WaitingForPlayers
 
 import android.content.Context
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat.startActivity
@@ -64,26 +65,17 @@ class WaitingForPlayersActivity(val pollerFactory: PollerFactory = PollerFactory
     }
 
     fun revealAnswer(view: View) {
-        //Log.wtf("button press", "revealed answer")
         if (queue == null) {
             queue = queueFactory.create(this)
         }
 
-
-        val quizId = getQuizId()
-        val stage = getCurrentStage()
-
-        val url = "http://10.0.2.2:8090/revealQuestion?quizId=" +quizId + "&questionNumber=" + stage
+        val url = "http://10.0.2.2:8090/revealQuestion?quizId=" + getQuizId(intent) + "&questionNumber=" + getStage(intent)
         val request = requestFactory.create(Request.Method.PUT, url, Response.Listener<String> {}, Response.ErrorListener {})
         queue?.add(request)
     }
 
-    private fun amHost(): Boolean {
-       return intent.extras.get("HOST") == true
-    }
-
     private fun setVisibleButton(){
-        val stage = getCurrentStage()
+        val stage = getStage(intent)
         val startQuizButton = findViewById<Button>(R.id.startQuizButton)
         val revealAnswerButton = findViewById<Button>(R.id.revealAnswerButton)
 
@@ -95,7 +87,7 @@ class WaitingForPlayersActivity(val pollerFactory: PollerFactory = PollerFactory
     }
 
     private fun addHostSection(){
-        if (amHost()) {
+        if (getAmHost(intent)) {
             val hostSection = findViewById<FrameLayout>(R.id.hostSection)
             hostSection.visibility = View.VISIBLE
             setVisibleButton()
@@ -103,62 +95,40 @@ class WaitingForPlayersActivity(val pollerFactory: PollerFactory = PollerFactory
         }
     }
 
-    private fun getCurrentStage (): Int {
-        val stage = intent.extras?.get("STAGE")
-        if (stage is Int) {
-            return stage
-        }
-        return -1
+    private fun revealAnswer() {
+        poller?.stop()
+        val newIntent = intentFactory.create(this, RevealAnswerActivity::class.java)
+        copyExtrasFromIntent(intent, newIntent)
+
+        startActivity(newIntent)
     }
 
-    private fun getQuizId (): String {
-        return intent.extras?.get("QUIZ_ID").toString()
-    }
-    private fun getPlayerName () : String {
-        val playerName = intent.extras.get("PLAYER_NAME")
-        if (playerName is String) {
-            return playerName
+    private fun continueToNextQuestion() {
+        poller?.stop()
+
+        val newIntent = if (getAmHost(intent) ){
+            intentFactory.create(this, WaitingForPlayersActivity::class.java)
+        } else {
+            intentFactory.create(this, QuestionActivity::class.java)
         }
-        //Log.e("extra error", "playerName: " +(playerName) )
-        return ""
+        copyExtrasFromIntent(intent, newIntent)
+        newIntent.putExtra("STAGE", getStage(intent) + 1)
+        startActivity(newIntent)
     }
 
     fun getHasStartedRequestListener(): Response.Listener<String> {
-       // Log.wtf("bbb", "gettingHasStartedListener for stage: " + getCurrentStage() )
-
         return  Response.Listener<String> { response ->
-//            Log.wtf("has started", response)
-            val currentStage = getCurrentStage()
+            val currentStage = getStage(intent)
 
             val parsedReponse = Klaxon().parse<StatusResponse>(response) ?: StatusResponse(-1,false)
             val respondingStage: Int = parsedReponse.questionNumber
 
             if (currentStage == respondingStage && parsedReponse.revealed) {
-                poller?.stop()
-                val newIntent = intentFactory.create(this, RevealAnswerActivity::class.java)
-                copyExtrasFromIntent(intent, newIntent)
-
-                startActivity(newIntent)
+                revealAnswer()
             }
 
             if (currentStage < respondingStage) {
-                poller?.stop()
-
-                if (amHost() ){
-                    val newIntent = intentFactory.create(this, WaitingForPlayersActivity::class.java)
-                    newIntent.putExtra("QUIZ_ID", getQuizId ())
-                    newIntent.putExtra("STAGE", getCurrentStage()+1)
-                    newIntent.putExtra("HOST", true)
-                    startActivity(newIntent)
-
-                } else {
-                    val newIntent = intentFactory.create(this, QuestionActivity::class.java)
-                    newIntent.putExtra("QUIZ_ID", getQuizId())
-                    newIntent.putExtra("PLAYER_NAME", getPlayerName())
-//                intent.putExtra("HOST", intent.extras.get("HOST") as Boolean)
-                    startActivity(newIntent)
-                }
-
+                continueToNextQuestion()
             }
         }
     }
@@ -169,22 +139,21 @@ class WaitingForPlayersActivity(val pollerFactory: PollerFactory = PollerFactory
         addHostSection()
         poller = pollerFactory.create(this)
 
-        val quizId  = intent.extras.get("QUIZ_ID")
 
         val playerListView = findViewById<LinearLayout>(R.id.playerList)
         val getPlayersWithoutQuestions = GetPlayersRequestFactory(
-            requestFactory, this, playerListView, false, quizId.toString()
+            requestFactory, this, playerListView, false, getQuizId(intent)
         ).create()
 
         val playersWithQuestionListView = findViewById<LinearLayout>(R.id.playersWithQuestionList)
         val getPlayersWithQuestions =  GetPlayersRequestFactory(
-            requestFactory, this, playersWithQuestionListView, true, quizId.toString()
+            requestFactory, this, playersWithQuestionListView, true, getQuizId(intent)
         ).create()
 
 
         val hasStarted = requestFactory.create(
             Request.Method.GET,
-            "http://10.0.2.2:8090/stage?quizId=" +quizId,
+            "http://10.0.2.2:8090/stage?quizId=" +getQuizId(intent),
             getHasStartedRequestListener(),
             defaultErrorListener)
 
@@ -197,6 +166,5 @@ class WaitingForPlayersActivity(val pollerFactory: PollerFactory = PollerFactory
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_waiting_for_players)
         innerOnCreate()
-        Log.wtf("name", "WaitingForPlayerActivity: " + getPlayerName(intent))
     }
 }

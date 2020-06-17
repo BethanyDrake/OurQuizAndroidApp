@@ -24,9 +24,7 @@ class QuestionActivity(
         return Response.Listener<String> { response ->
             val parsedResponse = Klaxon().parse<Question>(response)
             if (parsedResponse == null){
-               // Log.wtf("bbb", "failed to get question" )
             } else{
-                //Log.wtf("bbb", "got question" )
                 populateUiWithQuestionDetails(parsedResponse)
             }
         }
@@ -45,14 +43,13 @@ class QuestionActivity(
     }
 
     private fun getQuestion(quizId:String){
-        //Log.wtf("bbb", "gettingt question" )
 
         val queue = queueFactory.create(this)
         val stringRequest = requestFactory.create(
             Request.Method.GET,
             "http://10.0.2.2:8090/currentQuestion?quizId=" +quizId,
             getListener(),
-            Response.ErrorListener { Log.wtf("bbb", "failed to get question 2" )})
+            Response.ErrorListener { Log.wtf("bbb", "failed to get question" )})
 
         queue.add(stringRequest)
     }
@@ -106,8 +103,6 @@ class QuestionActivity(
     fun innerOnCreate() {
         val quizId  = intent.extras.get("QUIZ_ID")
         getQuestion(quizId.toString())
-
-        Log.wtf("name", "QuestionActivty: " + getPlayerName(intent))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
