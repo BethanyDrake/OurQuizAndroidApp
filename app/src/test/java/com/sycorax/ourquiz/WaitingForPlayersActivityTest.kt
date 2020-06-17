@@ -15,6 +15,38 @@ import org.junit.Test
 
 class WaitingForPlayersActivityTest {
 
+    private fun createWaitingForPlayersActivity(
+        mPollerFactory: PollerFactory = mockk(relaxed = true),
+        mIntentHelper: IntentHelper = createMockIntentHelper(),
+        mIntentFactory: IntentFactory = mockk(relaxed = true),
+        mRequestFactory: StringRequestFactory = mockk(relaxed = true),
+        mQueueFactory: VolleyRequestQueueFactory = mockk(relaxed = true)
+        ): WaitingForPlayersActivity {
+
+        val activity = spyk(
+            WaitingForPlayersActivity(
+                mPollerFactory,
+                mRequestFactory,
+                mIntentFactory,
+                mQueueFactory,
+                mIntentHelper
+            )
+        )
+        every { activity.intent } returns mockk(relaxed = true)
+        every { activity.startActivity(any()) } returns Unit
+        addMockViews(activity)
+        activity.innerOnCreate()
+        return activity
+
+    }
+
+    private fun addMockViews(activitySpy: WaitingForPlayersActivity) {
+        every { activitySpy.findViewById<LinearLayout>(any()) } returns mockk(relaxed = true)
+        every { activitySpy.findViewById<FrameLayout>(R.id.hostSection) } returns mockk(relaxed = true)
+        every { activitySpy.findViewById<Button>(R.id.startQuizButton) } returns mockk(relaxed = true)
+        every { activitySpy.findViewById<Button>(R.id.revealAnswerButton) } returns mockk(relaxed = true)
+    }
+
     @Test
     fun `starts polling`() {
 
@@ -23,17 +55,7 @@ class WaitingForPlayersActivityTest {
         every {
             mPollerFactory.create(any())
         } returns mPoller
-        val activity = spyk(
-            WaitingForPlayersActivity(
-                mPollerFactory,
-                mockk(relaxed = true),
-                mockk(relaxed = true),
-                mockk(relaxed = true)
-            )
-        )
-        every { activity.intent } returns mockk(relaxed = true)
-        every { activity.findViewById<LinearLayout>(any()) } returns mockk(relaxed = true)
-        activity.innerOnCreate()
+        createWaitingForPlayersActivity(mPollerFactory)
         verify { mPoller.start(any()) }
     }
 
@@ -47,24 +69,15 @@ class WaitingForPlayersActivityTest {
         every {
             mPollerFactory.create(any())
         } returns mPoller
-        val activity = spyk(
-            WaitingForPlayersActivity(
-                mPollerFactory,
-                mockk(relaxed = true),
-                mockk(relaxed = true),
-                mockk(relaxed = true)
-            )
-        )
+        val mIntentHelper = createMockIntentHelper(stage= -1)
+        val activity = createWaitingForPlayersActivity(mPollerFactory, mIntentHelper)
+//
+//        val extras = mapOf(Pair("STAGE", -1))
 
-        val extras = mapOf(Pair("STAGE", -1))
-
-        val mIntent = createMockIntentWithExtras(extras)
-        every { activity.intent } returns mIntent
-        every { activity.findViewById<LinearLayout>(any()) } returns mockk(relaxed = true)
         val notStartedResponse = Klaxon().toJsonString(StatusResponse(-1, false))
         activity.getHasStartedRequestListener().onResponse(notStartedResponse)
 
-        verify { mPoller wasNot Called }
+        verify(exactly = 0){ mPoller.stop() }
 
     }
 
@@ -78,24 +91,10 @@ class WaitingForPlayersActivityTest {
             mPollerFactory.create(any())
         } returns mPoller
         val mIntentFactory = mockk<IntentFactory>(relaxed = true)
-        val activity = spyk(
-            WaitingForPlayersActivity(
-                mPollerFactory,
-                mockk(relaxed = true),
-                mIntentFactory,
-                mockk(relaxed = true)
-            )
-        )
-        val extras =
-            mapOf(Pair("STAGE", 0), Pair("QUIZ_ID", "whatever"), Pair("HOST", false), Pair("PLAYER_NAME", "my name"))
-        val mIntent = createMockIntentWithExtras(extras)
-        every { activity.intent } returns mIntent
-        every { activity.startActivity(any()) } returns Unit
-        every { activity.findViewById<LinearLayout>(any()) } returns mockk(relaxed = true)
-
+        val mIntentHelper = createMockIntentHelper(stage=0)
+        val activity = createWaitingForPlayersActivity(mPollerFactory, mIntentHelper, mIntentFactory)
 
         val justStartedResponse = Klaxon().toJsonString(StatusResponse(0, true))
-        activity.innerOnCreate()
         activity.getHasStartedRequestListener().onResponse(justStartedResponse)
 
         verify { mPoller.stop() }
@@ -116,24 +115,12 @@ class WaitingForPlayersActivityTest {
         every {
             mPollerFactory.create(any())
         } returns mPoller
-        val activity = spyk(
-            WaitingForPlayersActivity(
-                mPollerFactory,
-                mockk(relaxed = true),
-                mIntentFactory,
-                mockk(relaxed = true)
-            )
-        )
-        val extras =
-            mapOf(Pair("STAGE", -1), Pair("QUIZ_ID", "whatever"), Pair("HOST", false), Pair("PLAYER_NAME", "my name"))
-        val mIntent = createMockIntentWithExtras(extras)
-        every { activity.intent } returns mIntent
-        every { activity.startActivity(any()) } returns Unit
-        every { activity.findViewById<LinearLayout>(any()) } returns mockk(relaxed = true)
 
+        val mIntentHelper = createMockIntentHelper(stage = -1)
 
+        val activity = createWaitingForPlayersActivity(mPollerFactory, mIntentHelper, mIntentFactory = mIntentFactory)
         val justStartedResponse = Klaxon().toJsonString(StatusResponse(0, false))
-        activity.innerOnCreate()
+
         activity.getHasStartedRequestListener().onResponse(justStartedResponse)
 
 
@@ -146,21 +133,11 @@ class WaitingForPlayersActivityTest {
     @Test
     fun `reveal answer -- tells api to reveal the current questionanswer`() {
         val mRequestFactory: StringRequestFactory = mockk(relaxed = true)
-        val activity = spyk(
 
-            WaitingForPlayersActivity(
-                mockk(relaxed = true),
-                mRequestFactory,
-                mockk(relaxed = true),
-                mockk(relaxed = true)
-            )
-        )
-        val extras =
-            mapOf(Pair("STAGE", 0), Pair("QUIZ_ID", "a-quiz-id"), Pair("HOST", false), Pair("PLAYER_NAME", "my name"))
-        val mIntent = createMockIntentWithExtras(extras)
-        every { activity.intent } returns mIntent
+        val mIntentHelper = createMockIntentHelper("a-quiz-id", "my name", false, 0)
+        val activity = createWaitingForPlayersActivity(mIntentHelper= mIntentHelper, mRequestFactory = mRequestFactory)
+
         activity.revealAnswer(mockk())
-
 
         verify {
             mRequestFactory.create(
@@ -185,25 +162,11 @@ class WaitingForPlayersActivityTest {
         every {
             mPollerFactory.create(any())
         } returns mPoller
-        val activity = spyk(
-            WaitingForPlayersActivity(
-                mPollerFactory,
-                mockk(relaxed = true),
-                mIntentFactory,
-                mockk(relaxed = true),
-                createMockIntentHelper(stage = -1, isHost = true)
-            )
-        )
-        val mIntent = mockk<Intent>()
-        every { activity.intent } returns mIntent
-        every { activity.startActivity(any()) } returns Unit
-        every { activity.findViewById<LinearLayout>(any()) } returns mockk(relaxed = true)
-        every { activity.findViewById<FrameLayout>(R.id.hostSection) } returns mockk(relaxed = true)
-        every { activity.findViewById<Button>(R.id.startQuizButton) } returns mockk(relaxed = true)
-        every { activity.findViewById<Button>(R.id.revealAnswerButton) } returns mockk(relaxed = true)
-        val nextQuestionResponse = Klaxon().toJsonString(StatusResponse(0, false))
 
-        activity.innerOnCreate()
+        val mIntentHelper = createMockIntentHelper(stage = -1, isHost = true)
+        val activity = createWaitingForPlayersActivity(mPollerFactory,mIntentHelper, mIntentFactory)
+
+        val nextQuestionResponse = Klaxon().toJsonString(StatusResponse(0, false))
         activity.getHasStartedRequestListener().onResponse(nextQuestionResponse)
 
         verify { mPoller.stop() }
@@ -212,6 +175,4 @@ class WaitingForPlayersActivityTest {
         verify { mCreatedIntend.putExtra("STAGE", 0) }
 
     }
-
-
 }

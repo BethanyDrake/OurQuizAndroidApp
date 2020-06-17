@@ -28,7 +28,6 @@ class JoinActivityTest {
 
         class SpyJoinActivity(queueFactory: VolleyRequestQueueFactory, stringRequestFactory: StringRequestFactory, intentFactory: IntentFactory) : JoinActivity(queueFactory, stringRequestFactory, intentFactory) {
             override fun <T : View> findViewById(id: Int): T {
-                println("finding view")
                 return when (id) {
                     R.id.textView -> mockk<TextView>(relaxed = true) as T
                     R.id.editText -> mockQuizIdField as T
