@@ -16,7 +16,8 @@ class QuestionActivity(
     val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory(),
     val intentFactory: IntentFactory = IntentFactory(),
     val submitAnswerService: SubmitAnswerService = SubmitAnswerService(),
-    val logger:Logger = Logger()
+    val logger:Logger = Logger(),
+    val intentHelper: IntentHelper = IntentHelper()
 ) : AppCompatActivity() {
 
 
@@ -35,7 +36,7 @@ class QuestionActivity(
 
             val newIntent = intentFactory.create(this, WaitingForPlayersActivity::class.java)
 
-            copyExtrasFromIntent(intent, newIntent)
+            intentHelper.copyExtrasFromIntent(intent, newIntent)
             newIntent.putExtra("STAGE", 0)
 
             startActivity(newIntent)

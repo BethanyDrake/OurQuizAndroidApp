@@ -33,7 +33,13 @@ class PollerFactory {
         return Poller(context)
     }
 }
-class WaitingForPlayersActivity(val pollerFactory: PollerFactory = PollerFactory(), val requestFactory: StringRequestFactory = StringRequestFactory(), val intentFactory: IntentFactory = IntentFactory(), val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory()) : AppCompatActivity() {
+class WaitingForPlayersActivity(
+    val pollerFactory: PollerFactory = PollerFactory(),
+    val requestFactory: StringRequestFactory = StringRequestFactory(),
+    val intentFactory: IntentFactory = IntentFactory(),
+    val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory(),
+    val intentHelper: IntentHelper = IntentHelper()
+) : AppCompatActivity() {
 
     var poller: Poller? = null
     var queue: RequestQueue? = null
@@ -69,13 +75,13 @@ class WaitingForPlayersActivity(val pollerFactory: PollerFactory = PollerFactory
             queue = queueFactory.create(this)
         }
 
-        val url = "http://10.0.2.2:8090/revealQuestion?quizId=" + getQuizId(intent) + "&questionNumber=" + getStage(intent)
+        val url = "http://10.0.2.2:8090/revealQuestion?quizId=" + intentHelper.getQuizId(intent) + "&questionNumber=" + intentHelper.getStage(intent)
         val request = requestFactory.create(Request.Method.PUT, url, Response.Listener<String> {}, Response.ErrorListener {})
         queue?.add(request)
     }
 
     private fun setVisibleButton(){
-        val stage = getStage(intent)
+        val stage = intentHelper.getStage(intent)
         val startQuizButton = findViewById<Button>(R.id.startQuizButton)
         val revealAnswerButton = findViewById<Button>(R.id.revealAnswerButton)
 
@@ -87,7 +93,7 @@ class WaitingForPlayersActivity(val pollerFactory: PollerFactory = PollerFactory
     }
 
     private fun addHostSection(){
-        if (getAmHost(intent)) {
+        if (intentHelper.getAmHost(intent)) {
             val hostSection = findViewById<FrameLayout>(R.id.hostSection)
             hostSection.visibility = View.VISIBLE
             setVisibleButton()
@@ -98,7 +104,7 @@ class WaitingForPlayersActivity(val pollerFactory: PollerFactory = PollerFactory
     private fun revealAnswer() {
         poller?.stop()
         val newIntent = intentFactory.create(this, RevealAnswerActivity::class.java)
-        copyExtrasFromIntent(intent, newIntent)
+        intentHelper.copyExtrasFromIntent(intent, newIntent)
 
         startActivity(newIntent)
     }
@@ -106,19 +112,19 @@ class WaitingForPlayersActivity(val pollerFactory: PollerFactory = PollerFactory
     private fun continueToNextQuestion() {
         poller?.stop()
 
-        val newIntent = if (getAmHost(intent) ){
+        val newIntent = if (intentHelper.getAmHost(intent) ){
             intentFactory.create(this, WaitingForPlayersActivity::class.java)
         } else {
             intentFactory.create(this, QuestionActivity::class.java)
         }
-        copyExtrasFromIntent(intent, newIntent)
-        newIntent.putExtra("STAGE", getStage(intent) + 1)
+        intentHelper.copyExtrasFromIntent(intent, newIntent)
+        newIntent.putExtra("STAGE", intentHelper.getStage(intent) + 1)
         startActivity(newIntent)
     }
 
     fun getHasStartedRequestListener(): Response.Listener<String> {
         return  Response.Listener<String> { response ->
-            val currentStage = getStage(intent)
+            val currentStage = intentHelper.getStage(intent)
 
             val parsedReponse = Klaxon().parse<StatusResponse>(response) ?: StatusResponse(-1,false)
             val respondingStage: Int = parsedReponse.questionNumber
@@ -142,18 +148,18 @@ class WaitingForPlayersActivity(val pollerFactory: PollerFactory = PollerFactory
 
         val playerListView = findViewById<LinearLayout>(R.id.playerList)
         val getPlayersWithoutQuestions = GetPlayersRequestFactory(
-            requestFactory, this, playerListView, false, getQuizId(intent)
+            requestFactory, this, playerListView, false, intentHelper.getQuizId(intent)
         ).create()
 
         val playersWithQuestionListView = findViewById<LinearLayout>(R.id.playersWithQuestionList)
         val getPlayersWithQuestions =  GetPlayersRequestFactory(
-            requestFactory, this, playersWithQuestionListView, true, getQuizId(intent)
+            requestFactory, this, playersWithQuestionListView, true, intentHelper.getQuizId(intent)
         ).create()
 
 
         val hasStarted = requestFactory.create(
             Request.Method.GET,
-            "http://10.0.2.2:8090/stage?quizId=" +getQuizId(intent),
+            "http://10.0.2.2:8090/stage?quizId=" + intentHelper.getQuizId(intent),
             getHasStartedRequestListener(),
             defaultErrorListener)
 

@@ -170,9 +170,8 @@ class WaitingForPlayersActivityTest {
                 any()
             )
         }
-
-
     }
+
 
     @Test
     fun `when I am host -- and stage returned is later than mine -- reopen waiting screen as next stage`() {
@@ -191,11 +190,11 @@ class WaitingForPlayersActivityTest {
                 mPollerFactory,
                 mockk(relaxed = true),
                 mIntentFactory,
-                mockk(relaxed = true)
+                mockk(relaxed = true),
+                createMockIntentHelper(stage = -1, isHost = true)
             )
         )
-        val extras = mapOf(Pair("STAGE", -1), Pair("QUIZ_ID", "whatever"), Pair("HOST", true))
-        val mIntent = createMockIntentWithExtras(extras)
+        val mIntent = mockk<Intent>()
         every { activity.intent } returns mIntent
         every { activity.startActivity(any()) } returns Unit
         every { activity.findViewById<LinearLayout>(any()) } returns mockk(relaxed = true)
@@ -211,7 +210,6 @@ class WaitingForPlayersActivityTest {
         verify { activity.startActivity(any()) }
         verify { mIntentFactory.create(any(), WaitingForPlayersActivity::class.java) }
         verify { mCreatedIntend.putExtra("STAGE", 0) }
-
 
     }
 

@@ -11,7 +11,7 @@ import com.beust.klaxon.Klaxon
 data class RevealAnswerResponse(val answerText: String, val yourAnswer: String)
 
 
-class RevealAnswerActivity(val requestFactory: StringRequestFactory = StringRequestFactory(), val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory()) : AppCompatActivity() {
+class RevealAnswerActivity(val requestFactory: StringRequestFactory = StringRequestFactory(), val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory(), val intentHelper: IntentHelper = IntentHelper()) : AppCompatActivity() {
 
 
     fun getResponseListener(): Response.Listener<String> {
@@ -41,9 +41,9 @@ class RevealAnswerActivity(val requestFactory: StringRequestFactory = StringRequ
         val request = requestFactory.create(
             Request.Method.GET,
             "http://10.0.2.2:8090/correctAnswer?" +
-                    "quizId=" + getQuizId(intent) +
-                    "&questionNumber=" + getCurrentQuestion(intent) +
-                    "&playerName=" + getPlayerName(intent),
+                    "quizId=" + intentHelper.getQuizId(intent) +
+                    "&questionNumber=" + intentHelper.getCurrentQuestion(intent) +
+                    "&playerName=" + intentHelper.getPlayerName(intent),
             getResponseListener(),
             Response.ErrorListener {  }
 
@@ -59,6 +59,6 @@ class RevealAnswerActivity(val requestFactory: StringRequestFactory = StringRequ
         setContentView(R.layout.activity_reveal_answer)
         innerOnCreate()
 
-        Log.wtf("name", "RevealAnswerActivity: " + getPlayerName(intent))
+        Log.wtf("name", "RevealAnswerActivity: " + intentHelper.getPlayerName(intent))
     }
 }
