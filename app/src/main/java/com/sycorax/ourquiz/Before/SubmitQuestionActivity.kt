@@ -1,4 +1,4 @@
-package com.sycorax.ourquiz
+package com.sycorax.ourquiz.Before
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -10,7 +10,11 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.beust.klaxon.Klaxon
-import com.sycorax.ourquiz.WaitingForPlayers.WaitingForPlayersActivity
+import com.sycorax.ourquiz.During.WaitingForPlayersActivity
+import com.sycorax.ourquiz.IntentFactory
+import com.sycorax.ourquiz.Question
+import com.sycorax.ourquiz.R
+import com.sycorax.ourquiz.VolleyRequestQueueFactory
 
 class RequestWithBody(val body:String, method:Int, url: String, responseListener: Response.Listener<String>,  errorListener: Response.ErrorListener )
     : StringRequest(method, url, responseListener, errorListener) {
@@ -60,7 +64,12 @@ open class SubmitQuestionActivity(
 
 
     private fun getCorrectAnswer() : Int {
-        val radioButtonIds = listOf(R.id.A, R.id.B, R.id.C, R.id.D)
+        val radioButtonIds = listOf(
+            R.id.A,
+            R.id.B,
+            R.id.C,
+            R.id.D
+        )
         val radioGroup: RadioGroup = findViewById(R.id.radioGroup)
 
         return radioButtonIds.indexOf(radioGroup.checkedRadioButtonId)
@@ -69,7 +78,12 @@ open class SubmitQuestionActivity(
 
 
     fun submit(view: View) {
-        val answerTexts: List<String> = listOf(R.id.TextA, R.id.TextB, R.id.TextC, R.id.TextD).map { (findViewById<EditText>(it)).text.toString()  }
+        val answerTexts: List<String> = listOf(
+            R.id.TextA,
+            R.id.TextB,
+            R.id.TextC,
+            R.id.TextD
+        ).map { (findViewById<EditText>(it)).text.toString()  }
         val questionText = findViewById<EditText>(R.id.questionText).text.toString()
 
         val quizId = intent.extras?.get("QUIZ_ID").toString();

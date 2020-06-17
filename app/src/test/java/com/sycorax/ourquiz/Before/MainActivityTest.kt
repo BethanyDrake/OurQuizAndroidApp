@@ -1,13 +1,12 @@
-package com.sycorax.ourquiz
+package com.sycorax.ourquiz.Before
 
-import android.content.Context
 import android.content.Intent
 import android.view.View
+import com.sycorax.ourquiz.IntentFactory
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
-import org.junit.Assert
 import org.junit.Test
 
 class MainActivityTest {

@@ -1,4 +1,4 @@
-package com.sycorax.ourquiz.WaitingForPlayers
+package com.sycorax.ourquiz.During
 
 import android.content.Context
 import android.util.Log

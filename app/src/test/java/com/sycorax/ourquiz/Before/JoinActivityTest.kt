@@ -1,4 +1,4 @@
-package com.sycorax.ourquiz
+package com.sycorax.ourquiz.Before
 
 import android.content.Intent
 import android.text.Editable
@@ -8,6 +8,10 @@ import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
+import com.sycorax.ourquiz.IntentFactory
+import com.sycorax.ourquiz.R
+import com.sycorax.ourquiz.StringRequestFactory
+import com.sycorax.ourquiz.VolleyRequestQueueFactory
 import io.mockk.*
 import org.junit.Test
 
@@ -21,7 +25,7 @@ class JoinActivityTest {
         return mEditText
     }
 
-    private fun setUpJoinActivity(mStringRequestFactory: StringRequestFactory = mockk(relaxed = true), mQueue: RequestQueue = mockk(relaxed = true), mStringRequest: StringRequest = mockk(relaxed = true), intentFactory:IntentFactory = IntentFactory()):JoinActivity {
+    private fun setUpJoinActivity(mStringRequestFactory: StringRequestFactory = mockk(relaxed = true), mQueue: RequestQueue = mockk(relaxed = true), mStringRequest: StringRequest = mockk(relaxed = true), intentFactory: IntentFactory = IntentFactory()): JoinActivity {
 
         val mockQuizIdField = createMockEditText("a-quiz-id")
         val mockNameField = createMockEditText("my-name")

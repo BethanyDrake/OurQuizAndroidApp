@@ -1,4 +1,4 @@
-package com.sycorax.ourquiz
+package com.sycorax.ourquiz.Before
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,7 +8,10 @@ import android.widget.EditText
 import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
-import com.sycorax.ourquiz.WaitingForPlayers.WaitingForPlayersActivity
+import com.sycorax.ourquiz.During.WaitingForPlayersActivity
+import com.sycorax.ourquiz.R
+import com.sycorax.ourquiz.StringRequestFactory
+import com.sycorax.ourquiz.VolleyRequestQueueFactory
 
 class HostActivity (
     val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory(),

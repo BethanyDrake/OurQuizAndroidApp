@@ -6,7 +6,7 @@
         android:id="@+id/parentLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".WaitingForPlayers.WaitingForPlayersActivity">
+        tools:context=".During.WaitingForPlayersActivity">
     <LinearLayout
             android:id="@+id/playersWithQuestionList"
             android:orientation="vertical"

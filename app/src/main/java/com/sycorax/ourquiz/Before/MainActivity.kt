@@ -1,8 +1,10 @@
-package com.sycorax.ourquiz
+package com.sycorax.ourquiz.Before
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.sycorax.ourquiz.IntentFactory
+import com.sycorax.ourquiz.R
 
 class MainActivity(val intentFactory: IntentFactory = IntentFactory()) : AppCompatActivity() {
 

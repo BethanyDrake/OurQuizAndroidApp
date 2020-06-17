@@ -1,19 +1,21 @@
-package com.sycorax.ourquiz
+package com.sycorax.ourquiz.During
 
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
+import com.sycorax.ourquiz.Before.RequestWithBody
+import com.sycorax.ourquiz.Before.RequestWithBodyFactory
+import com.sycorax.ourquiz.VolleyRequestQueueFactory
 import io.mockk.*
-import junit.framework.Assert.assertTrue
-import net.bytebuddy.matcher.ElementMatchers.any
 import org.junit.Test
 
 class SubmitAnswerServiceTest {
 
     @Test
     fun `invokes callback when api returns OK`(){
-        val service = SubmitAnswerService(mockk(relaxed = true), mockk(relaxed = true))
+        val service =
+            SubmitAnswerService(mockk(relaxed = true), mockk(relaxed = true))
         val callback = mockk<()->Unit>(relaxed = true)
-        val body = SubmitAnswerBody("", "", 0,0)
+        val body = SubmitAnswerBody("", "", 0, 0)
         service.submitAnswer(mockk(), callback, body)
         service.getListener().onResponse("OK")
 
@@ -34,7 +36,7 @@ class SubmitAnswerServiceTest {
 
         val service = SubmitAnswerService(queueFactory, requestWithBodyFactory)
         val callback = mockk<()->Unit>(relaxed = true)
-        val body = SubmitAnswerBody("", "", 0,0)
+        val body = SubmitAnswerBody("", "", 0, 0)
         service.submitAnswer(mockk(), callback, body)
 
         //added a request the queue

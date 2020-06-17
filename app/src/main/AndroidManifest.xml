@@ -12,7 +12,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true">
-        <activity android:name=".MainActivity">
+        <activity android:name=".Before.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -20,32 +20,32 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".JoinActivity"
+                android:name=".Before.JoinActivity"
                 android:label="@string/title_activity_join"
-                android:parentActivityName=".MainActivity">
+                android:parentActivityName=".Before.MainActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.sycorax.ourquiz.MainActivity"/>
+                    android:value="com.sycorax.ourquiz.Before.MainActivity"/>
         </activity>
         <activity
-                android:name=".HostActivity"
+                android:name=".Before.HostActivity"
                 android:label="@string/title_activity_host"
-                android:parentActivityName=".MainActivity">
+                android:parentActivityName=".Before.MainActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.sycorax.ourquiz.MainActivity"/>
+                    android:value="com.sycorax.ourquiz.Before.MainActivity"/>
         </activity>
         <activity
-                android:name=".WaitingForPlayers.WaitingForPlayersActivity"
+                android:name=".During.WaitingForPlayersActivity"
                 android:label="Waiting For Players">
         </activity>
         <activity
-                android:name=".SubmitQuestionActivity"
+                android:name=".Before.SubmitQuestionActivity"
                 android:label="Submit A Question">
         </activity>
-        <activity android:name=".QuestionActivity">
+        <activity android:name=".During.QuestionActivity">
         </activity>
-        <activity android:name=".RevealAnswerActivity">
+        <activity android:name=".During.RevealAnswerActivity">
         </activity>
     </application>
 

@@ -1,4 +1,4 @@
-package com.sycorax.ourquiz
+package com.sycorax.ourquiz.During
 
 import android.content.Intent
 import android.widget.Button
@@ -6,10 +6,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.android.volley.Request
 import com.beust.klaxon.Klaxon
-import com.sycorax.ourquiz.WaitingForPlayers.Poller
-import com.sycorax.ourquiz.WaitingForPlayers.PollerFactory
-import com.sycorax.ourquiz.WaitingForPlayers.StatusResponse
-import com.sycorax.ourquiz.WaitingForPlayers.WaitingForPlayersActivity
+import com.sycorax.ourquiz.*
 import io.mockk.*
 import org.junit.Test
 
@@ -69,7 +66,7 @@ class WaitingForPlayersActivityTest {
         every {
             mPollerFactory.create(any())
         } returns mPoller
-        val mIntentHelper = createMockIntentHelper(stage= -1)
+        val mIntentHelper = createMockIntentHelper(stage = -1)
         val activity = createWaitingForPlayersActivity(mPollerFactory, mIntentHelper)
 //
 //        val extras = mapOf(Pair("STAGE", -1))
@@ -91,7 +88,7 @@ class WaitingForPlayersActivityTest {
             mPollerFactory.create(any())
         } returns mPoller
         val mIntentFactory = mockk<IntentFactory>(relaxed = true)
-        val mIntentHelper = createMockIntentHelper(stage=0)
+        val mIntentHelper = createMockIntentHelper(stage = 0)
         val activity = createWaitingForPlayersActivity(mPollerFactory, mIntentHelper, mIntentFactory)
 
         val justStartedResponse = Klaxon().toJsonString(StatusResponse(0, true))

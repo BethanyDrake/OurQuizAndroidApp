@@ -1,11 +1,15 @@
-package com.sycorax.ourquiz
+package com.sycorax.ourquiz.Before
 
 import android.content.Intent
 import android.view.View
 import android.widget.EditText
 import android.widget.RadioGroup
 import com.beust.klaxon.Klaxon
-import com.sycorax.ourquiz.WaitingForPlayers.WaitingForPlayersActivity
+import com.sycorax.ourquiz.During.WaitingForPlayersActivity
+import com.sycorax.ourquiz.IntentFactory
+import com.sycorax.ourquiz.R
+import com.sycorax.ourquiz.createMockEditText
+import com.sycorax.ourquiz.createMockIntentWithExtras
 import io.mockk.*
 import org.junit.Assert
 import org.junit.Test
@@ -18,7 +22,12 @@ class SubmitQuestionActivityTest {
         val capturedBody:CapturingSlot<String> = CapturingSlot()
         every { mRequestWithBodyFactory.create(capture(capturedBody), any(), any(), any(), any()) } returns mockk(relaxed = true)
 
-        val submitQuestionActivity = spyk(SubmitQuestionActivity(mockk(relaxed = true), mRequestWithBodyFactory))
+        val submitQuestionActivity = spyk(
+            SubmitQuestionActivity(
+                mockk(relaxed = true),
+                mRequestWithBodyFactory
+            )
+        )
 
         every {  submitQuestionActivity.findViewById<EditText>(any()) } returns mockk(relaxed = true)
 
@@ -50,7 +59,12 @@ class SubmitQuestionActivityTest {
         val capturedBody:CapturingSlot<String> = CapturingSlot()
         every { mRequestWithBodyFactory.create(capture(capturedBody), any(), any(), any(), any()) } returns mockk(relaxed = true)
 
-        val submitQuestionActivity = spyk(SubmitQuestionActivity(mockk(relaxed = true), mRequestWithBodyFactory))
+        val submitQuestionActivity = spyk(
+            SubmitQuestionActivity(
+                mockk(relaxed = true),
+                mRequestWithBodyFactory
+            )
+        )
 
         every {  submitQuestionActivity.findViewById<EditText>(any()) } returns mockk(relaxed = true)
 
@@ -82,7 +96,12 @@ class SubmitQuestionActivityTest {
         every { mRequestWithBodyFactory.create(capture(capturedBody), any(), any(), any(), any()) } returns mockk(relaxed = true)
 
 
-        val submitQuestionActivity = spyk(SubmitQuestionActivity(mockk(relaxed = true), mRequestWithBodyFactory))
+        val submitQuestionActivity = spyk(
+            SubmitQuestionActivity(
+                mockk(relaxed = true),
+                mRequestWithBodyFactory
+            )
+        )
 
         val mEditText = createMockEditText("an option")
 
@@ -115,7 +134,12 @@ class SubmitQuestionActivityTest {
         val capturedBody:CapturingSlot<String> = CapturingSlot()
         every { mRequestWithBodyFactory.create(capture(capturedBody), any(), any(), any(), any()) } returns mockk(relaxed = true)
 
-        val submitQuestionActivity = spyk(SubmitQuestionActivity(mockk(relaxed = true), mRequestWithBodyFactory))
+        val submitQuestionActivity = spyk(
+            SubmitQuestionActivity(
+                mockk(relaxed = true),
+                mRequestWithBodyFactory
+            )
+        )
 
 
         every {  submitQuestionActivity.findViewById<EditText>( any()) } returns mockk(relaxed = true)
@@ -146,7 +170,13 @@ class SubmitQuestionActivityTest {
 
         val intentFactory = mockk<IntentFactory>()
         every { intentFactory.create(any(), WaitingForPlayersActivity::class.java)} returns mockk(relaxed = true)
-        val submitQuestionActivity = spyk(SubmitQuestionActivity(intentFactory = mockk(relaxed = true)))
+        val submitQuestionActivity = spyk(
+            SubmitQuestionActivity(
+                intentFactory = mockk(
+                    relaxed = true
+                )
+            )
+        )
 
         val startedActivityWithIntent = CapturingSlot<Intent>()
         every { submitQuestionActivity.startActivity(capture(startedActivityWithIntent)) } returns Unit

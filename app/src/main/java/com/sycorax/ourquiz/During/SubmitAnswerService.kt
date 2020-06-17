@@ -1,15 +1,17 @@
-package com.sycorax.ourquiz
+package com.sycorax.ourquiz.During
 
 import android.content.Context
 import com.android.volley.Request
 import com.android.volley.Response
 import com.beust.klaxon.Klaxon
+import com.sycorax.ourquiz.Before.RequestWithBodyFactory
+import com.sycorax.ourquiz.VolleyRequestQueueFactory
 
 
 data class SubmitAnswerBody(val quizId: String, val playerName: String, val questionNumber: Int, val answerId:Int)
 
 class SubmitAnswerService(
-    val queueFactory: VolleyRequestQueueFactory =  VolleyRequestQueueFactory(),
+    val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory(),
     val requestWithBodyFactory: RequestWithBodyFactory = RequestWithBodyFactory()
 ) {
 

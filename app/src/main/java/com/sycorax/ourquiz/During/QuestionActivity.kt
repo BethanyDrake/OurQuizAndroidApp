@@ -1,4 +1,4 @@
-package com.sycorax.ourquiz
+package com.sycorax.ourquiz.During
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -9,14 +9,14 @@ import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
 import com.beust.klaxon.Klaxon
-import com.sycorax.ourquiz.WaitingForPlayers.WaitingForPlayersActivity
+import com.sycorax.ourquiz.*
 
 class QuestionActivity(
     val requestFactory: StringRequestFactory = StringRequestFactory(),
     val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory(),
     val intentFactory: IntentFactory = IntentFactory(),
     val submitAnswerService: SubmitAnswerService = SubmitAnswerService(),
-    val logger:Logger = Logger(),
+    val logger: Logger = Logger(),
     val intentHelper: IntentHelper = IntentHelper()
 ) : AppCompatActivity() {
 
@@ -83,14 +83,24 @@ class QuestionActivity(
 //    }
 
     private fun getSelectedAnswer() : Int {
-        val radioButtonIds = listOf(R.id.A, R.id.B, R.id.C, R.id.D)
+        val radioButtonIds = listOf(
+            R.id.A,
+            R.id.B,
+            R.id.C,
+            R.id.D
+        )
         val radioGroup: RadioGroup = findViewById(R.id.radioGroup)
 
         return radioButtonIds.indexOf(radioGroup.checkedRadioButtonId)
     }
 
     fun onSelectAnswer(view: View) {
-        val body = SubmitAnswerBody(getQuizId(), getPlayerName(), 0,getSelectedAnswer())
+        val body = SubmitAnswerBody(
+            getQuizId(),
+            getPlayerName(),
+            0,
+            getSelectedAnswer()
+        )
 
         try{
             submitAnswerService.submitAnswer(this, getOnFinishedSubmittingAnswer(),body)
