@@ -95,6 +95,26 @@ class RevealAnswerActivityTest {
     }
 
     @Test
+    fun `opens the question we're up to` () {
+
+        val intentFactory: IntentFactory = mockk(relaxed = true)
+
+        val questionActivityIntent: Intent = mockk("questionActivityIntent", relaxed = true)
+        every { intentFactory.create(any(), QuestionActivity::class.java)  } returns questionActivityIntent
+
+        val intentHelper = createMockIntentHelper(stage = 0)
+
+        val activity = createRevealAnswersActivity( intentFactory = intentFactory, intentHelper = intentHelper)
+        activity.innerOnCreate()
+
+        val response = StatusResponse(7, false)
+        activity.getOnGetStage().onResponse(Klaxon().toJsonString(response))
+
+        verify { questionActivityIntent.putExtra("STAGE", 7) }
+        verify {activity.startActivity(questionActivityIntent)}
+    }
+
+    @Test
     fun `doesn't stops polling or open next question if we're still on the same question`() {
         val mPoller = mockk<Poller>(relaxed = true)
         val mPollerFactory = mockk<PollerFactory>(relaxed = true)

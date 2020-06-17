@@ -69,6 +69,9 @@ class RevealAnswerActivity(
             if (parsedResponse != null && parsedResponse.questionNumber> intentHelper.getCurrentQuestion(intent)) {
                 poller?.stop()
                 val newIntent = intentFactory.create(this, QuestionActivity::class.java)
+                intentHelper.copyExtrasFromIntent(intent, newIntent)
+                newIntent.putExtra("STAGE", parsedResponse.questionNumber)
+
                 startActivity(newIntent)
             }
         }
