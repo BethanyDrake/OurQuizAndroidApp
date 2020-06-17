@@ -1,29 +1,136 @@
 package com.sycorax.ourquiz.During
 
+import android.content.Intent
+import android.support.v7.app.AppCompatActivity
 import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
 import com.beust.klaxon.Klaxon
-import com.sycorax.ourquiz.R
-import com.sycorax.ourquiz.StringRequestFactory
-import com.sycorax.ourquiz.createMockIntentWithExtras
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.spyk
-import io.mockk.verify
+import com.sycorax.ourquiz.*
+import io.mockk.*
+import io.mockk.MockKSettings.relaxed
 import org.junit.Test
 
 class RevealAnswerActivityTest {
+
+    fun createRevealAnswersActivity(
+        requestFactory: StringRequestFactory = mockk(relaxed = true),
+        queueFactory: VolleyRequestQueueFactory = mockk(relaxed = true),
+        intentHelper: IntentHelper = mockk(relaxed = true),
+        pollerFactory: PollerFactory = mockk(relaxed = true),
+        intentFactory: IntentFactory = mockk(relaxed = true)
+    ): RevealAnswerActivity {
+        val activity = spyk(RevealAnswerActivity(
+            requestFactory,
+            queueFactory,
+            intentHelper,
+            pollerFactory,
+            intentFactory
+        ))
+        every {
+            activity.intent
+        } returns mockk()
+        every {activity.startActivity(any())} returns Unit
+
+        return activity;
+    }
+
+    @Test
+    fun `starts polling for when the question is revealed`() {
+
+        val mPoller = mockk<Poller>(relaxed = true)
+        val mPollerFactory = mockk<PollerFactory>()
+        val requestFactory: StringRequestFactory = mockk(relaxed = true)
+        val intentHelper = createMockIntentHelper("a-quiz-id")
+
+        val getStageRequest: StringRequest = mockk("getStageRequest")
+
+        every {
+            mPollerFactory.create(any())
+        } returns mPoller
+
+        every {
+            requestFactory.create(
+                Request.Method.GET,
+                "http://10.0.2.2:8090/stage?quizId=a-quiz-id",
+                any(),
+                any()) } returns getStageRequest
+
+        val activity = createRevealAnswersActivity(pollerFactory = mPollerFactory, intentHelper = intentHelper, requestFactory = requestFactory)
+        activity.innerOnCreate()
+
+
+        verify {
+            requestFactory.create(
+                Request.Method.GET,
+                "http://10.0.2.2:8090/stage?quizId=a-quiz-id",
+                any(),
+                any()) }
+
+        verify { mPoller.start(listOf(getStageRequest)) }
+
+    }
+
+    @Test
+    fun `stops polling and opens next question when we're up to the next question`() {
+        val mPoller = mockk<Poller>(relaxed = true)
+        val mPollerFactory = mockk<PollerFactory>(relaxed = true)
+        every { mPollerFactory.create(any()) } returns mPoller
+        val intentFactory: IntentFactory = mockk(relaxed = true)
+
+        val questionActivityIntent: Intent = mockk("questionActivityIntent")
+        every { intentFactory.create(any(), QuestionActivity::class.java)  } returns questionActivityIntent
+
+        val intentHelper = createMockIntentHelper(stage = 0)
+
+        val activity = createRevealAnswersActivity(pollerFactory = mPollerFactory, intentFactory = intentFactory, intentHelper = intentHelper)
+        activity.innerOnCreate()
+
+        val response = StatusResponse(1, false)
+        activity.getOnGetStage().onResponse(Klaxon().toJsonString(response))
+
+        verify { mPoller.stop() }
+        verify {activity.startActivity(questionActivityIntent)}
+    }
+
+    @Test
+    fun `doesn't stops polling or open next question if we're still on the same question`() {
+        val mPoller = mockk<Poller>(relaxed = true)
+        val mPollerFactory = mockk<PollerFactory>(relaxed = true)
+        every { mPollerFactory.create(any()) } returns mPoller
+        val intentFactory: IntentFactory = mockk(relaxed = true)
+
+        val questionActivityIntent: Intent = mockk("questionActivityIntent")
+        every { intentFactory.create(any(), QuestionActivity::class.java)  } returns questionActivityIntent
+
+        val intentHelper = createMockIntentHelper(stage = 0)
+
+        val activity = createRevealAnswersActivity(pollerFactory = mPollerFactory, intentFactory = intentFactory, intentHelper = intentHelper)
+        activity.innerOnCreate()
+
+        val response = StatusResponse(0, true)
+        activity.getOnGetStage().onResponse(Klaxon().toJsonString(response))
+
+        verify (exactly = 0){ mPoller.stop() }
+        verify (exactly = 0){activity.startActivity(any())}
+    }
+
+
 
     @Test
     fun `requests the answer for this question of this quiz`(){
 
         val mRequestFactory = mockk<StringRequestFactory>(relaxed = true)
-        val activity = spyk(RevealAnswerActivity(mRequestFactory, mockk(relaxed = true)))
-        val extras = mapOf(Pair("STAGE", 1), Pair("QUIZ_ID", "a-quiz-id"), Pair("PLAYER_NAME", "a-name"))
-        every { activity.intent} returns createMockIntentWithExtras(extras)
+
+
+        val intentHelper = createMockIntentHelper(stage= 1, quizId = "a-quiz-id", playerName = "a-name")
+        val activity = createRevealAnswersActivity(requestFactory = mRequestFactory, intentHelper = intentHelper)
+
         val mListener = mockk<Response.Listener<String>>("response listener")
         every { activity.getResponseListener()} returns mListener
+
+
         activity.innerOnCreate()
 
         verify { mRequestFactory.create(
