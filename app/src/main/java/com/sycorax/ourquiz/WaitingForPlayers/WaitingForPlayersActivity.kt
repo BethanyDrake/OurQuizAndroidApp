@@ -1,7 +1,9 @@
 package com.sycorax.ourquiz.WaitingForPlayers
 
+import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.content.ContextCompat.startActivity
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -25,26 +27,15 @@ fun parseList(stringList: String): List<String> {
     return stringList.subSequence(1,stringList.lastIndex).split(", ");
 }
 
-class WaitingForPlayersActivity : AppCompatActivity {
+class PollerFactory {
+    fun create(context: Context): Poller {
+        return Poller(context)
+    }
+}
+class WaitingForPlayersActivity(val pollerFactory: PollerFactory = PollerFactory(), val requestFactory: StringRequestFactory = StringRequestFactory(), val intentFactory: IntentFactory = IntentFactory(), val queueFactory: VolleyRequestQueueFactory = VolleyRequestQueueFactory()) : AppCompatActivity() {
 
     var poller: Poller? = null
-    val requestFactory: StringRequestFactory
-    private var intentFactory: IntentFactory
     var queue: RequestQueue? = null
-
-    constructor(poller: Poller, requestFactory: StringRequestFactory, intentFactory: IntentFactory){
-        this.poller = poller
-        this.requestFactory = requestFactory
-        this.intentFactory = intentFactory
-
-        Log.wtf("name", "WaitingForPlayersActivity: " + getPlayerName(intent))
-    }
-
-    constructor(){
-        //poller = Poller(this)
-        requestFactory = StringRequestFactory()
-        intentFactory = IntentFactory()
-    }
 
     override fun onPostResume() {
         super.onPostResume()
@@ -67,7 +58,6 @@ class WaitingForPlayersActivity : AppCompatActivity {
             Request.Method.PUT,
             "http://10.0.2.2:8090/start?quizId=" +intent.extras.get("QUIZ_ID"),
             Response.Listener<String> { response ->
-                Log.wtf("started quiz", response)
             },
             Response.ErrorListener { Log.wtf("error", "a" )})
         queue.add(stringRequest)
@@ -76,7 +66,7 @@ class WaitingForPlayersActivity : AppCompatActivity {
     fun revealAnswer(view: View) {
         //Log.wtf("button press", "revealed answer")
         if (queue == null) {
-            queue = Volley.newRequestQueue(this)
+            queue = queueFactory.create(this)
         }
 
 
@@ -94,7 +84,6 @@ class WaitingForPlayersActivity : AppCompatActivity {
 
     private fun setVisibleButton(){
         val stage = getCurrentStage()
-        Log.wtf("updating", "setting visible button for stage: " + stage)
         val startQuizButton = findViewById<Button>(R.id.startQuizButton)
         val revealAnswerButton = findViewById<Button>(R.id.revealAnswerButton)
 
@@ -107,7 +96,6 @@ class WaitingForPlayersActivity : AppCompatActivity {
 
     private fun addHostSection(){
         if (amHost()) {
-            Log.wtf("updating", "adding host section")
             val hostSection = findViewById<FrameLayout>(R.id.hostSection)
             hostSection.visibility = View.VISIBLE
             setVisibleButton()
@@ -131,7 +119,7 @@ class WaitingForPlayersActivity : AppCompatActivity {
         if (playerName is String) {
             return playerName
         }
-        Log.e("extra error", "playerName: " +(playerName) )
+        //Log.e("extra error", "playerName: " +(playerName) )
         return ""
     }
 
@@ -150,7 +138,6 @@ class WaitingForPlayersActivity : AppCompatActivity {
                 val newIntent = intentFactory.create(this, RevealAnswerActivity::class.java)
                 copyExtrasFromIntent(intent, newIntent)
 
-                Log.wtf("aaaa", "opening reveal answer activity")
                 startActivity(newIntent)
             }
 
@@ -180,7 +167,7 @@ class WaitingForPlayersActivity : AppCompatActivity {
 
     fun innerOnCreate() {
         addHostSection()
-        if (poller == null) poller = Poller(this)
+        poller = pollerFactory.create(this)
 
         val quizId  = intent.extras.get("QUIZ_ID")
 

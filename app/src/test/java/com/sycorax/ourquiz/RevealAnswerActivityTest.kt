@@ -1,10 +1,12 @@
 package com.sycorax.ourquiz
 
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
 import com.beust.klaxon.Klaxon
+import com.sycorax.ourquiz.WaitingForPlayers.WaitingForPlayersActivity
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
@@ -12,7 +14,6 @@ import io.mockk.verify
 import org.junit.Test
 
 class RevealAnswerActivityTest {
-
 
     @Test
     fun `requests the answer for this question of this quiz`(){
