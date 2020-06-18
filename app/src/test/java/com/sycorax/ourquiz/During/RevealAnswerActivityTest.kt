@@ -2,6 +2,8 @@ package com.sycorax.ourquiz.During
 
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
+import android.view.View
+import android.widget.FrameLayout
 import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
@@ -33,7 +35,14 @@ class RevealAnswerActivityTest {
         } returns mockk()
         every {activity.startActivity(any())} returns Unit
 
+        addViews(activity)
+
         return activity;
+    }
+
+    fun addViews(activity: AppCompatActivity) {
+        every { activity.findViewById<FrameLayout>(R.id.hostSection) } returns mockk(relaxed = true)
+        every { activity.findViewById<FrameLayout>(R.id.yourAnswerSection) } returns mockk(relaxed = true)
     }
 
     @Test
@@ -79,7 +88,7 @@ class RevealAnswerActivityTest {
         every { mPollerFactory.create(any()) } returns mPoller
         val intentFactory: IntentFactory = mockk(relaxed = true)
 
-        val questionActivityIntent: Intent = mockk("questionActivityIntent")
+        val questionActivityIntent: Intent = mockk("questionActivityIntent", relaxed = true)
         every { intentFactory.create(any(), QuestionActivity::class.java)  } returns questionActivityIntent
 
         val intentHelper = createMockIntentHelper(stage = 0)
@@ -155,7 +164,30 @@ class RevealAnswerActivityTest {
 
         verify { mRequestFactory.create(
             Request.Method.GET,
-            match { it.endsWith("/correctAnswer?quizId=a-quiz-id&questionNumber=1&playerName=a-name") },
+            match { it.endsWith("/correctAnswer?quizId=a-quiz-id&questionNumber=1&playerName=a-name&isHost=false") },
+            mListener,
+            any()) }
+
+    }
+
+    @Test
+    fun `requests the answer for this question of this quiz -- as host`(){
+
+        val mRequestFactory = mockk<StringRequestFactory>(relaxed = true)
+
+
+        val intentHelper = createMockIntentHelper(stage= 1, quizId = "a-quiz-id", playerName = "a-name", isHost = true)
+        val activity = createRevealAnswersActivity(requestFactory = mRequestFactory, intentHelper = intentHelper)
+
+        val mListener = mockk<Response.Listener<String>>("response listener")
+        every { activity.getResponseListener()} returns mListener
+
+
+        activity.innerOnCreate()
+
+        verify { mRequestFactory.create(
+            Request.Method.GET,
+            match { it.endsWith("/correctAnswer?quizId=a-quiz-id&questionNumber=1&playerName=a-name&isHost=true") },
             mListener,
             any()) }
 
@@ -233,5 +265,50 @@ class RevealAnswerActivityTest {
         activity.getResponseListener().onResponse(Klaxon().toJsonString(response))
 
         verify { mYourAnswer.setText(yourAnswerText + " ❌") }
+    }
+
+    @Test
+    fun `when I am host -- next question button is visible`() {
+        val intentHelper = createMockIntentHelper(isHost = true)
+
+        val activity = createRevealAnswersActivity(intentHelper = intentHelper)
+        val mHostSection = mockk<FrameLayout>(relaxed = true)
+        every { activity.findViewById<FrameLayout>(R.id.hostSection) } returns mHostSection
+        activity.innerOnCreate()
+
+        verify{ mHostSection.visibility = View.VISIBLE }
+
+    }
+
+    @Test
+    fun `when I am host -- hides the your answer section`() {
+        val intentHelper = createMockIntentHelper(isHost = true)
+
+        val activity = createRevealAnswersActivity(intentHelper = intentHelper)
+        val mYourAnswerSection = mockk<FrameLayout>(relaxed = true)
+        every { activity.findViewById<FrameLayout>(R.id.yourAnswerSection) } returns mYourAnswerSection
+        activity.innerOnCreate()
+
+        verify{ mYourAnswerSection.visibility = View.GONE }
+    }
+
+    @Test
+    fun `when I click next question - it tells api to go to the next question, from the current question`() {
+
+        val mRequestFactory = mockk<StringRequestFactory>(relaxed = true)
+
+
+        val intentHelper = createMockIntentHelper(stage= 1, quizId = "a-quiz-id", playerName = "a-name")
+        val activity = createRevealAnswersActivity(requestFactory = mRequestFactory, intentHelper = intentHelper)
+
+        activity.innerOnCreate()
+        activity.onClickNextQuestion(mockk())
+
+        verify { mRequestFactory.create(
+            Request.Method.PUT,
+            match { it.endsWith("/nextQuestion?quizId=a-quiz-id&currentQuestion=1") },
+            any(),
+            any()) }
+
     }
 }

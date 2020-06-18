@@ -1,11 +1,13 @@
 package com.sycorax.ourquiz.During
 
-import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.FrameLayout
 import android.widget.TextView
 import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.beust.klaxon.Klaxon
 import com.sycorax.ourquiz.*
@@ -21,8 +23,24 @@ class RevealAnswerActivity(
     val intentFactory: IntentFactory = IntentFactory()
     ) : AppCompatActivity() {
 
-    var poller : Poller? = null;
+    var poller : Poller? = null
+    var queue : RequestQueue? = null
 
+
+    override fun onPostResume() {
+        super.onPostResume()
+        poller?.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        poller?.stop()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        poller?.stop()
+    }
 
     fun getResponseListener(): Response.Listener<String> {
         return Response.Listener<String>{response ->
@@ -52,14 +70,14 @@ class RevealAnswerActivity(
             "http://10.0.2.2:8090/correctAnswer?" +
                     "quizId=" + intentHelper.getQuizId(intent) +
                     "&questionNumber=" + intentHelper.getCurrentQuestion(intent) +
-                    "&playerName=" + intentHelper.getPlayerName(intent),
+                    "&playerName=" + intentHelper.getPlayerName(intent)+
+                    "&isHost=" + intentHelper.getAmHost(intent),
             getResponseListener(),
             Response.ErrorListener {  }
 
         )
 
-        val queue = queueFactory.create(this)
-        queue.add(request)
+        queue?.add(request)
     }
 
     fun getOnGetStage() :Response.Listener<String>{
@@ -67,6 +85,7 @@ class RevealAnswerActivity(
             response ->
             val parsedResponse = Klaxon().parse<StatusResponse>(response)
             if (parsedResponse != null && parsedResponse.questionNumber> intentHelper.getCurrentQuestion(intent)) {
+                //Log.wtf("next", "moving to next question")
                 poller?.stop()
                 val newIntent = intentFactory.create(this, QuestionActivity::class.java)
                 intentHelper.copyExtrasFromIntent(intent, newIntent)
@@ -90,10 +109,37 @@ class RevealAnswerActivity(
 
     }
 
+    fun onClickNextQuestion(view: View) {
+        val request = requestFactory.create(
+            Request.Method.PUT,
+            "http://10.0.2.2:8090/nextQuestion?" +
+                    "quizId=" + intentHelper.getQuizId(intent) +
+                    "&currentQuestion=" + intentHelper.getCurrentQuestion(intent),
+            Response.Listener {  },
+            Response.ErrorListener {  }
+        )
+        queue?.add(request)
+    }
+
+    private fun showHostSectionsOnly(){
+
+        val hostSection = findViewById<FrameLayout>(R.id.hostSection)
+        hostSection.visibility = View.VISIBLE
+
+        val yourAnswerSection = findViewById<View>(R.id.yourAnswerSection)
+        yourAnswerSection.visibility = View.GONE
+
+
+    }
+
     fun innerOnCreate() {
         poller = pollerFactory.create(this)
+        queue = queueFactory.create(this)
         revealAnswer()
         startPolling()
+        if (intentHelper.getAmHost(intent)) {
+            showHostSectionsOnly()
+        }
 
     }
 
@@ -101,7 +147,5 @@ class RevealAnswerActivity(
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reveal_answer)
         innerOnCreate()
-
-        Log.wtf("name", "RevealAnswerActivity: " + intentHelper.getPlayerName(intent))
     }
 }

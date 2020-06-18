@@ -170,6 +170,5 @@ class WaitingForPlayersActivityTest {
         verify { activity.startActivity(any()) }
         verify { mIntentFactory.create(any(), WaitingForPlayersActivity::class.java) }
         verify { mCreatedIntend.putExtra("STAGE", 0) }
-
     }
 }

@@ -26,6 +26,13 @@
         <Space
                 android:layout_width="match_parent"
                 android:layout_height="20dp"/>
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/yourAnswerSection"
+        >
         <TextView
                 android:text="Your answer:"
                 android:layout_width="match_parent"
@@ -36,5 +43,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/yourAnswer"
                 app:layout_constraintTop_toTopOf="parent"/>
+        </LinearLayout>
     </LinearLayout>
+
+    <FrameLayout
+            android:id="@+id/hostSection"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+    >
+        <Button
+                android:text="NextQuestion"
+                android:onClick="onClickNextQuestion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/startQuizButton"/>
+
+    </FrameLayout>
 </android.support.constraint.ConstraintLayout>
