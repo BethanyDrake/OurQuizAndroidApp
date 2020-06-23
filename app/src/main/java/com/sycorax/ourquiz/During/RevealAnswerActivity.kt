@@ -84,7 +84,7 @@ class RevealAnswerActivity(
         return Response.Listener<String>{
             response ->
             val parsedResponse = Klaxon().parse<StatusResponse>(response)
-            Log.wtf("aaaa", " " + parsedResponse)
+//            Log.wtf("aaaa", " " + parsedResponse)
             if (parsedResponse != null && parsedResponse.questionNumber == -1 && parsedResponse.revealed) {
                 //open end screen
                 Log.wtf("aaaa", "last question")

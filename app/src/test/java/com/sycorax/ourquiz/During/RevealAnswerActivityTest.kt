@@ -157,7 +157,7 @@ class RevealAnswerActivityTest {
         val intentHelper = createMockIntentHelper(stage= 1, quizId = "a-quiz-id", playerName = "a-name")
         val activity = createRevealAnswersActivity(requestFactory = mRequestFactory, intentHelper = intentHelper)
 
-        val mListener = mockk<VirtualMachine.ForHotSpot.Connection.Response.Listener<String>>("response listener")
+        val mListener = mockk<Response.Listener<String>>("response listener")
         every { activity.getResponseListener()} returns mListener
 
 
@@ -180,7 +180,7 @@ class RevealAnswerActivityTest {
         val intentHelper = createMockIntentHelper(stage= 1, quizId = "a-quiz-id", playerName = "a-name", isHost = true)
         val activity = createRevealAnswersActivity(requestFactory = mRequestFactory, intentHelper = intentHelper)
 
-        val mListener = mockk<VirtualMachine.ForHotSpot.Connection.Response.Listener<String>>("response listener")
+        val mListener = mockk<Response.Listener<String>>("response listener")
         every { activity.getResponseListener()} returns mListener
 
 
