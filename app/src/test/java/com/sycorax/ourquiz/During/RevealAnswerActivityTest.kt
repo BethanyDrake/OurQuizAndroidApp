@@ -12,6 +12,7 @@ import com.beust.klaxon.Klaxon
 import com.sycorax.ourquiz.*
 import io.mockk.*
 import io.mockk.MockKSettings.relaxed
+import net.bytebuddy.agent.VirtualMachine
 import org.junit.Test
 
 class RevealAnswerActivityTest {
@@ -156,7 +157,7 @@ class RevealAnswerActivityTest {
         val intentHelper = createMockIntentHelper(stage= 1, quizId = "a-quiz-id", playerName = "a-name")
         val activity = createRevealAnswersActivity(requestFactory = mRequestFactory, intentHelper = intentHelper)
 
-        val mListener = mockk<Response.Listener<String>>("response listener")
+        val mListener = mockk<VirtualMachine.ForHotSpot.Connection.Response.Listener<String>>("response listener")
         every { activity.getResponseListener()} returns mListener
 
 
@@ -179,7 +180,7 @@ class RevealAnswerActivityTest {
         val intentHelper = createMockIntentHelper(stage= 1, quizId = "a-quiz-id", playerName = "a-name", isHost = true)
         val activity = createRevealAnswersActivity(requestFactory = mRequestFactory, intentHelper = intentHelper)
 
-        val mListener = mockk<Response.Listener<String>>("response listener")
+        val mListener = mockk<VirtualMachine.ForHotSpot.Connection.Response.Listener<String>>("response listener")
         every { activity.getResponseListener()} returns mListener
 
 

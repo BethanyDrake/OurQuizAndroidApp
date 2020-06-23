@@ -84,6 +84,17 @@ class RevealAnswerActivity(
         return Response.Listener<String>{
             response ->
             val parsedResponse = Klaxon().parse<StatusResponse>(response)
+            Log.wtf("aaaa", " " + parsedResponse)
+            if (parsedResponse != null && parsedResponse.questionNumber == -1 && parsedResponse.revealed) {
+                //open end screen
+                Log.wtf("aaaa", "last question")
+                poller?.stop()
+                val newIntent = intentFactory.create(this, ResultsActivity::class.java)
+                intentHelper.copyExtrasFromIntent(intent, newIntent)
+                newIntent.putExtra("STAGE", parsedResponse.questionNumber)
+
+                startActivity(newIntent)
+            }
             if (parsedResponse != null && parsedResponse.questionNumber> intentHelper.getCurrentQuestion(intent)) {
                 //Log.wtf("next", "moving to next question")
                 poller?.stop()

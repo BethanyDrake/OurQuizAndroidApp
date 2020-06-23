@@ -8,6 +8,7 @@ import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
 import com.sycorax.ourquiz.*
+import com.sycorax.ourquiz.R.id.textView
 import kotlinx.android.synthetic.main.join_activity.*
 
 open class JoinActivity (

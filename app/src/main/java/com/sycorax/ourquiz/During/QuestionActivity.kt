@@ -37,18 +37,18 @@ class QuestionActivity(
             val newIntent = intentFactory.create(this, WaitingForPlayersActivity::class.java)
 
             intentHelper.copyExtrasFromIntent(intent, newIntent)
-            newIntent.putExtra("STAGE", 0)
+            //newIntent.putExtra("STAGE", 0)
 
             startActivity(newIntent)
         }
     }
 
-    private fun getQuestion(quizId:String){
+    private fun getQuestion(quizId:String, questionNumber: Int){
 
         val queue = queueFactory.create(this)
         val stringRequest = requestFactory.create(
             Request.Method.GET,
-            "http://10.0.2.2:8090/currentQuestion?quizId=" +quizId,
+            "http://10.0.2.2:8090/currentQuestion?quizId=" +quizId + "&expectedQuestionNumber="+questionNumber,
             getListener(),
             Response.ErrorListener { Log.wtf("bbb", "failed to get question" )})
 
@@ -98,7 +98,7 @@ class QuestionActivity(
         val body = SubmitAnswerBody(
             getQuizId(),
             getPlayerName(),
-            0,
+            intentHelper.getCurrentQuestion(intent),
             getSelectedAnswer()
         )
 
@@ -113,7 +113,7 @@ class QuestionActivity(
 
     fun innerOnCreate() {
         val quizId  = intent.extras.get("QUIZ_ID")
-        getQuestion(quizId.toString())
+        getQuestion(quizId.toString(), intentHelper.getCurrentQuestion(intent))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

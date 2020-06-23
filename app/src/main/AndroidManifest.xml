@@ -47,6 +47,8 @@
         </activity>
         <activity android:name=".During.RevealAnswerActivity">
         </activity>
+        <activity android:name=".ResultsActivity">
+        </activity>
     </application>
 
 </manifest>
