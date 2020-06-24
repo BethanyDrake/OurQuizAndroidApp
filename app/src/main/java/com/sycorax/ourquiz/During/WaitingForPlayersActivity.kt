@@ -15,6 +15,8 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.beust.klaxon.Klaxon
 import com.sycorax.ourquiz.*
+import com.sycorax.ourquiz.After.ResultsActivity
+import com.sycorax.ourquiz.Before.MainActivity
 
 data class StatusResponse(val questionNumber: Int, val revealed: Boolean)
 
@@ -105,6 +107,13 @@ class WaitingForPlayersActivity(
 
         startActivity(newIntent)
     }
+    private fun openResults() {
+        poller?.stop()
+        val newIntent = intentFactory.create(this, ResultsActivity::class.java)
+        intentHelper.copyExtrasFromIntent(intent, newIntent)
+        newIntent.putExtra("STAGE", -1)
+        startActivity(newIntent)
+    }
 
     private fun continueToNextQuestion() {
         poller?.stop()
@@ -125,6 +134,10 @@ class WaitingForPlayersActivity(
 
             val parsedReponse = Klaxon().parse<StatusResponse>(response) ?: StatusResponse(-1,false)
             val respondingStage: Int = parsedReponse.questionNumber
+            if (currentStage == -1 && parsedReponse.revealed) {
+                openResults()
+            }
+
 
             if (currentStage == respondingStage && parsedReponse.revealed) {
                 revealAnswer()
@@ -169,5 +182,9 @@ class WaitingForPlayersActivity(
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_waiting_for_players)
         innerOnCreate()
+    }
+    override fun onBackPressed() {
+        val newIntent = intentFactory.create(this, MainActivity::class.java)
+        startActivity(newIntent)
     }
 }

@@ -10,6 +10,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.beust.klaxon.Klaxon
 import com.sycorax.ourquiz.*
+import com.sycorax.ourquiz.Before.MainActivity
 
 class QuestionActivity(
     val requestFactory: StringRequestFactory = StringRequestFactory(),
@@ -120,5 +121,10 @@ class QuestionActivity(
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_question)
         innerOnCreate()
+    }
+
+    override fun onBackPressed() {
+        val newIntent = intentFactory.create(this, MainActivity::class.java)
+        startActivity(newIntent)
     }
 }

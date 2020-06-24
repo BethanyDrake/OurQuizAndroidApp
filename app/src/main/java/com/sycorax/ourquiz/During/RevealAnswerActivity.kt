@@ -12,6 +12,7 @@ import com.android.volley.Response
 import com.beust.klaxon.Klaxon
 import com.sycorax.ourquiz.*
 import com.sycorax.ourquiz.After.ResultsActivity
+import com.sycorax.ourquiz.Before.MainActivity
 
 data class RevealAnswerResponse(val answerText: String, val yourAnswer: String)
 
@@ -159,5 +160,10 @@ class RevealAnswerActivity(
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reveal_answer)
         innerOnCreate()
+    }
+
+    override fun onBackPressed() {
+        val newIntent = intentFactory.create(this, MainActivity::class.java)
+        startActivity(newIntent)
     }
 }

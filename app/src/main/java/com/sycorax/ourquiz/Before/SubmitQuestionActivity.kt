@@ -106,4 +106,9 @@ open class SubmitQuestionActivity(
 
         queue.add(putRequest)
     }
+
+    override fun onBackPressed() {
+        val newIntent = intentFactory.create(this, MainActivity::class.java)
+        startActivity(newIntent)
+    }
 }

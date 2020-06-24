@@ -52,7 +52,8 @@ class ResultsActivity(val queueFactory: VolleyRequestQueueFactory = VolleyReques
     private fun display(result: QuizResult) {
         val resultsView = findViewById<LinearLayout>(R.id.resultsView)
         resultsView.removeAllViews()
-        result.playerScores.forEach {
+        val rankedPlayers = result.playerScores.sortedByDescending { it.correctAnswers }
+        rankedPlayers.forEach {
             val textView = TextView(this)
 
             textView.text = it.name + " (" + it.correctAnswers + "/" + result.totalQuestions + ")"
@@ -63,5 +64,10 @@ class ResultsActivity(val queueFactory: VolleyRequestQueueFactory = VolleyReques
     fun onClickBack(view: View) {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+    }
+
+    override fun onBackPressed() {
+        val newIntent = Intent(this, MainActivity::class.java)
+        startActivity(newIntent)
     }
 }

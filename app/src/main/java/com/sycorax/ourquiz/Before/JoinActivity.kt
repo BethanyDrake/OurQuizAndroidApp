@@ -8,6 +8,7 @@ import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
 import com.sycorax.ourquiz.*
+import com.sycorax.ourquiz.During.WaitingForPlayersActivity
 import com.sycorax.ourquiz.R.id.textView
 import kotlinx.android.synthetic.main.join_activity.*
 
@@ -32,6 +33,14 @@ open class JoinActivity (
         textView.text = response
         if (response.equals("ok", true)) {
             val intent = intentFactory.create(this, SubmitQuestionActivity::class.java)
+            intent.putExtra("QUIZ_ID", quizId);
+            intent.putExtra("PLAYER_NAME", name);
+            intent.putExtra("STAGE", -1);
+            startActivity(intent)
+        }
+
+        if (response.equals("OK - already joined")) {
+            val intent = intentFactory.create(this, WaitingForPlayersActivity::class.java)
             intent.putExtra("QUIZ_ID", quizId);
             intent.putExtra("PLAYER_NAME", name);
             intent.putExtra("STAGE", -1);

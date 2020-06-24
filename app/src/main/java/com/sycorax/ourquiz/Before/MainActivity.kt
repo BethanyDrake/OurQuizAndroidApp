@@ -21,4 +21,9 @@ class MainActivity(val intentFactory: IntentFactory = IntentFactory()) : AppComp
         val intent = intentFactory.create(this, HostActivity::class.java)
         startActivity(intent)
     }
+
+    override fun onBackPressed() {
+        val newIntent = intentFactory.create(this, MainActivity::class.java)
+        startActivity(newIntent)
+    }
 }

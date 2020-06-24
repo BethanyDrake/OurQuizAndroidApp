@@ -8,6 +8,7 @@ import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
+import com.sycorax.ourquiz.During.WaitingForPlayersActivity
 import com.sycorax.ourquiz.IntentFactory
 import com.sycorax.ourquiz.R
 import com.sycorax.ourquiz.StringRequestFactory
@@ -87,6 +88,31 @@ class JoinActivityTest {
 
         joinActivity.join(View(joinActivity))
         joinActivity.onResponse("OK")
+
+        verify {
+            joinActivity.startActivity(any())
+        }
+
+        verify {startedActivityWithIntent.captured.putExtra("QUIZ_ID", "a-quiz-id")}
+        verify {startedActivityWithIntent.captured.putExtra("PLAYER_NAME", "my-name")}
+        verify {startedActivityWithIntent.captured.putExtra("STAGE", -1)}
+    }
+
+    @Test
+    fun join_whenResponseIsAlreadyJoined_opensWaitingForPlayersActivity (){
+
+        val mIntentFactory = mockk<IntentFactory>()
+        val joinActivity = spyk(setUpJoinActivity(intentFactory=mIntentFactory))
+
+        val startedActivityWithIntent = CapturingSlot<Intent>()
+        every {joinActivity.startActivity(capture(startedActivityWithIntent))} returns Unit
+
+        every {
+            mIntentFactory.create(any(), WaitingForPlayersActivity::class.java)
+        } returns mockk(relaxed = true)
+
+        joinActivity.join(View(joinActivity))
+        joinActivity.onResponse("OK - already joined")
 
         verify {
             joinActivity.startActivity(any())
