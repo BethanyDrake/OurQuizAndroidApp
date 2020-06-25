@@ -4,6 +4,7 @@ import android.content.Context
 import com.android.volley.Request
 import com.android.volley.Response
 import com.beust.klaxon.Klaxon
+import com.sycorax.API_URL
 import com.sycorax.ourquiz.Before.RequestWithBodyFactory
 import com.sycorax.ourquiz.VolleyRequestQueueFactory
 
@@ -26,7 +27,7 @@ class SubmitAnswerService(
     fun submitAnswer(context: Context, callback: () -> Unit, body: SubmitAnswerBody) {
 
         val bodyJson = Klaxon().toJsonString(body)
-        val url = "http://10.0.2.2:8090/submitAnswer?"
+        val url = API_URL + "submitAnswer?"
         val request = requestWithBodyFactory.create(bodyJson, Request.Method.PUT, url, getListener(), Response.ErrorListener{})
         val queue = queueFactory.create(context)
         queue.add(request)

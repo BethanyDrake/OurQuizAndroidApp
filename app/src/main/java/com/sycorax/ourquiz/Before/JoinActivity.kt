@@ -7,6 +7,7 @@ import android.widget.EditText
 import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
+import com.sycorax.API_URL
 import com.sycorax.ourquiz.*
 import com.sycorax.ourquiz.During.WaitingForPlayersActivity
 import com.sycorax.ourquiz.R.id.textView
@@ -58,7 +59,8 @@ open class JoinActivity (
 
         val queue = volleyRequestQueueFactory.create(this)
         quizId = quizIdInputView.text.toString()
-        val url:String = "http://10.0.2.2:8090/join?" +
+
+        val url:String = API_URL + "join?" +
                 "quizId=" + quizId + "&" +
                 "name="+name
 

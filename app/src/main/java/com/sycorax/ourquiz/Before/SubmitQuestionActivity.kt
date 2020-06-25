@@ -10,6 +10,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.beust.klaxon.Klaxon
+import com.sycorax.API_URL
 import com.sycorax.ourquiz.During.WaitingForPlayersActivity
 import com.sycorax.ourquiz.IntentFactory
 import com.sycorax.ourquiz.Question
@@ -89,7 +90,7 @@ open class SubmitQuestionActivity(
         val quizId = intent.extras?.get("QUIZ_ID").toString();
         val playerName = intent.extras?.get("PLAYER_NAME").toString();
 
-        val url = "http://10.0.2.2:8090/submit"
+        val url = API_URL + "submit"
 
         val queue = queueFactory.create(this)
 

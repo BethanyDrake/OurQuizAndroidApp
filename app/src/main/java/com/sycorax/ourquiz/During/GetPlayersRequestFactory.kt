@@ -7,6 +7,7 @@ import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
+import com.sycorax.API_URL
 import com.sycorax.ourquiz.StringRequestFactory
 
 
@@ -45,7 +46,7 @@ class GetPlayersRequestFactory(
     fun create(): StringRequest {
         return requestFactory.create(
             Request.Method.GET,
-            "http://10.0.2.2:8090/listParticipantsWho?quizId=" + quizId + "&&waiting=" + waiting,
+            API_URL + "listParticipantsWho?quizId=" + quizId + "&&waiting=" + waiting,
             getListener(),
             errorListener
         )

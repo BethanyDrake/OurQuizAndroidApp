@@ -8,6 +8,7 @@ import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
+import com.sycorax.API_URL
 import com.sycorax.ourquiz.During.WaitingForPlayersActivity
 import com.sycorax.ourquiz.IntentFactory
 import com.sycorax.ourquiz.R
@@ -63,7 +64,7 @@ class JoinActivityTest {
 
 
         val expectedMethod = Request.Method.GET
-        val expectedURL = "http://10.0.2.2:8090/join?quizId=a-quiz-id&name=my-name"
+        val expectedURL = API_URL + "join?quizId=a-quiz-id&name=my-name"
 
 
         verify(atMost = 1)  { mStringRequestFactory.create(expectedMethod, expectedURL, any(), any()) }

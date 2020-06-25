@@ -4,6 +4,7 @@ import android.widget.EditText
 import android.widget.TextView
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
+import com.sycorax.API_URL
 import com.sycorax.ourquiz.R
 import com.sycorax.ourquiz.StringRequestFactory
 import com.sycorax.ourquiz.VolleyRequestQueueFactory
@@ -23,7 +24,7 @@ class HostActivityTest {
         every {mRequestQueueFactory.create(any()) } returns mQueue
         val mRequestFactory = mockk<StringRequestFactory>()
 
-        every { mRequestFactory.create(any(), "http://10.0.2.2:8090/create?quizId=a-quiz-id", any(), any()) } returns mockk()
+        every { mRequestFactory.create(any(), API_URL + "create?quizId=a-quiz-id", any(), any()) } returns mockk()
 
         val hostActivity = spyk(HostActivity(mRequestQueueFactory, mRequestFactory))
 

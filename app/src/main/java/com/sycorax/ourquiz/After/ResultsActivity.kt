@@ -11,6 +11,7 @@ import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
 import com.beust.klaxon.Klaxon
+import com.sycorax.API_URL
 import com.sycorax.ourquiz.Before.MainActivity
 import com.sycorax.ourquiz.IntentHelper
 import com.sycorax.ourquiz.R
@@ -37,7 +38,7 @@ class ResultsActivity(val queueFactory: VolleyRequestQueueFactory = VolleyReques
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_results)
         val queue = queueFactory.create(this)
-        val url = "http://10.0.2.2:8090/quizResults?quizId=" + intentHelper.getQuizId(intent)
+        val url = API_URL +"quizResults?quizId=" + intentHelper.getQuizId(intent)
         val request = stringRequestFactory.create(Request.Method.GET, url, Response.Listener<String> {
             response ->
                 display(Klaxon().parse<QuizResult>(response)!!)

@@ -10,6 +10,7 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.beust.klaxon.Klaxon
+import com.sycorax.API_URL
 import com.sycorax.ourquiz.*
 import com.sycorax.ourquiz.After.ResultsActivity
 import com.sycorax.ourquiz.Before.MainActivity
@@ -69,7 +70,7 @@ class RevealAnswerActivity(
     private fun revealAnswer(){
         val request = requestFactory.create(
             Request.Method.GET,
-            "http://10.0.2.2:8090/correctAnswer?" +
+            API_URL + "correctAnswer?" +
                     "quizId=" + intentHelper.getQuizId(intent) +
                     "&questionNumber=" + intentHelper.getCurrentQuestion(intent) +
                     "&playerName=" + intentHelper.getPlayerName(intent)+
@@ -112,7 +113,7 @@ class RevealAnswerActivity(
     private fun startPolling() {
         val request = requestFactory.create(
             Request.Method.GET,
-            "http://10.0.2.2:8090/stage?" +
+            API_URL + "stage?" +
                     "quizId=" + intentHelper.getQuizId(intent),
             getOnGetStage(),
             Response.ErrorListener {  }
@@ -125,7 +126,7 @@ class RevealAnswerActivity(
     fun onClickNextQuestion(view: View) {
         val request = requestFactory.create(
             Request.Method.PUT,
-            "http://10.0.2.2:8090/nextQuestion?" +
+            API_URL + "nextQuestion?" +
                     "quizId=" + intentHelper.getQuizId(intent) +
                     "&currentQuestion=" + intentHelper.getCurrentQuestion(intent),
             Response.Listener {  },

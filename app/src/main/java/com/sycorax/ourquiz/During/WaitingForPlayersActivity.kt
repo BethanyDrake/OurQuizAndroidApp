@@ -14,6 +14,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.beust.klaxon.Klaxon
+import com.sycorax.API_URL
 import com.sycorax.ourquiz.*
 import com.sycorax.ourquiz.After.ResultsActivity
 import com.sycorax.ourquiz.Before.MainActivity
@@ -62,7 +63,7 @@ class WaitingForPlayersActivity(
         val queue = Volley.newRequestQueue(this)
         val stringRequest = StringRequest(
             Request.Method.PUT,
-            "http://10.0.2.2:8090/start?quizId=" +intent.extras.get("QUIZ_ID"),
+            API_URL + "start?quizId=" +intent.extras.get("QUIZ_ID"),
             Response.Listener<String> { response ->
             },
             Response.ErrorListener { Log.wtf("error", "a" )})
@@ -74,7 +75,7 @@ class WaitingForPlayersActivity(
             queue = queueFactory.create(this)
         }
 
-        val url = "http://10.0.2.2:8090/revealQuestion?quizId=" + intentHelper.getQuizId(intent) + "&questionNumber=" + intentHelper.getStage(intent)
+        val url = API_URL + "revealQuestion?quizId=" + intentHelper.getQuizId(intent) + "&questionNumber=" + intentHelper.getStage(intent)
         val request = requestFactory.create(Request.Method.PUT, url, Response.Listener<String> {}, Response.ErrorListener {})
         queue?.add(request)
     }
@@ -169,7 +170,7 @@ class WaitingForPlayersActivity(
 
         val hasStarted = requestFactory.create(
             Request.Method.GET,
-            "http://10.0.2.2:8090/stage?quizId=" + intentHelper.getQuizId(intent),
+            API_URL + "stage?quizId=" + intentHelper.getQuizId(intent),
             getHasStartedRequestListener(),
             defaultErrorListener)
 

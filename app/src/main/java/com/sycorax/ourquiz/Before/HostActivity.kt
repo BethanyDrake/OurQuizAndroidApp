@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.TextView
 import com.android.volley.Request
 import com.android.volley.Response
+import com.sycorax.API_URL
 import com.sycorax.ourquiz.During.WaitingForPlayersActivity
 import com.sycorax.ourquiz.R
 import com.sycorax.ourquiz.StringRequestFactory
@@ -42,7 +43,7 @@ class HostActivity (
 
         val queue = queueFactory.create(this)
         val quizId = quizIdInputView.text
-        val url = "http://10.0.2.2:8090/create?quizId="+ quizId
+        val url = API_URL + "create?quizId="+ quizId
 
         val stringRequest = stringRequestFactory.create(
             Request.Method.GET, url,
