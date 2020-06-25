@@ -10,18 +10,19 @@
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="20dp">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/marginLeft"
+            android:layout_marginRight="@dimen/marginLeft"
+            android:paddingTop="@dimen/marginTop"
+    >
         <TextView
                 android:text="The correct answer was:"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"/>
+                android:layout_height="wrap_content"/>
         <TextView
                 android:text=""
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/correctAnswer"
-                app:layout_constraintTop_toTopOf="parent"/>
+                android:layout_height="wrap_content" android:id="@+id/correctAnswer"/>
 
         <Space
                 android:layout_width="match_parent"
@@ -33,16 +34,14 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/yourAnswerSection"
         >
-        <TextView
-                android:text="Your answer:"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"/>
-        <TextView
-                android:text=""
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/yourAnswer"
-                app:layout_constraintTop_toTopOf="parent"/>
+            <TextView
+                    android:text="Your answer:"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            <TextView
+                    android:text=""
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/yourAnswer"/>
         </LinearLayout>
     </LinearLayout>
 

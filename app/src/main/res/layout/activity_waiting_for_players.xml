@@ -12,6 +12,8 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/marginTop"
+            android:layout_marginLeft="@dimen/marginLeft"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent">
     </LinearLayout>
     <LinearLayout
@@ -19,6 +21,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/marginLeft"
             app:layout_constraintTop_toBottomOf="@+id/playersWithQuestionList" app:layout_constraintStart_toStartOf="parent">
     </LinearLayout>
     <FrameLayout

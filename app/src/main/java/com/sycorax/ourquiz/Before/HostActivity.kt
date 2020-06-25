@@ -3,6 +3,7 @@ package com.sycorax.ourquiz.Before
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -44,6 +45,7 @@ class HostActivity (
         val queue = queueFactory.create(this)
         val quizId = quizIdInputView.text
         val url = API_URL + "create?quizId="+ quizId
+        Log.wtf("host", url)
 
         val stringRequest = stringRequestFactory.create(
             Request.Method.GET, url,

@@ -12,7 +12,10 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center">
+            android:layout_marginTop="@dimen/marginTop"
+            android:layout_marginRight="@dimen/marginLeft"
+            android:layout_marginLeft="@dimen/marginLeft"
+            android:gravity="center_horizontal">
         <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -20,7 +23,7 @@
                 android:ems="10"
                 android:id="@+id/questionText"
                 app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="100dp"/>
+                app:layout_constraintEnd_toEndOf="parent"/>
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"

@@ -12,14 +12,23 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="@dimen/marginTop"
+            android:layout_marginLeft="@dimen/marginLeft"
+            android:layout_marginRight="@dimen/marginLeft"
             android:id="@+id/resultsView">
     </LinearLayout>
-    <Button
-            android:text="Back"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:id="@+id/button3"
-            android:onClick="onClickBack" app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="10dp" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"/>
+    <FrameLayout
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+    >
+        <Button
+                android:text="Back"
+                android:onClick="onClickBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/startQuizButton"/>
+
+    </FrameLayout>
 </android.support.constraint.ConstraintLayout>
