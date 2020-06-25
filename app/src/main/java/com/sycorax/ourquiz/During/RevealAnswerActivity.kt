@@ -101,7 +101,12 @@ class RevealAnswerActivity(
             if (parsedResponse != null && parsedResponse.questionNumber> intentHelper.getCurrentQuestion(intent)) {
                 //Log.wtf("next", "moving to next question")
                 poller?.stop()
-                val newIntent = intentFactory.create(this, QuestionActivity::class.java)
+
+                val newIntent = if (intentHelper.getAmHost(intent) ){
+                    intentFactory.create(this, WaitingForPlayersActivity::class.java)
+                } else {
+                    intentFactory.create(this, QuestionActivity::class.java)
+                }
                 intentHelper.copyExtrasFromIntent(intent, newIntent)
                 newIntent.putExtra("STAGE", parsedResponse.questionNumber)
 

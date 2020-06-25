@@ -118,7 +118,6 @@ class WaitingForPlayersActivity(
 
     private fun continueToNextQuestion() {
         poller?.stop()
-
         val newIntent = if (intentHelper.getAmHost(intent) ){
             intentFactory.create(this, WaitingForPlayersActivity::class.java)
         } else {
